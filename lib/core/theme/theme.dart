@@ -14,5 +14,11 @@ class AppTheme {
       enabledBorder: _border(),
       focusedBorder: _border(AppPallete.gradient2),
     ),
+    bottomNavigationBarTheme: const BottomNavigationBarThemeData(
+      backgroundColor: Colors.white,
+      selectedItemColor: AppPallete.gradient2,
+      unselectedItemColor: AppPallete.bottomNavigationBarItemColor,
+    ),
+    cardTheme: const CardTheme(color: Colors.white, elevation: 6),
   );
 }

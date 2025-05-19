@@ -1,15 +1,11 @@
 import 'package:fitness_app/core/cubits/cubit/app_user_cubit.dart';
 import 'package:fitness_app/core/theme/theme.dart';
 import 'package:fitness_app/core/utilities/loader.dart';
-import 'package:fitness_app/features/auth/domain/usecases/current_user_usecase.dart';
-import 'package:fitness_app/features/auth/domain/usecases/update_user_usecase.dart';
-import 'package:fitness_app/features/auth/domain/usecases/user_login_usecase.dart';
-import 'package:fitness_app/features/auth/domain/usecases/user_logout_usecase.dart';
-import 'package:fitness_app/features/auth/domain/usecases/user_signup_usecase.dart';
 import 'package:fitness_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:fitness_app/features/auth/presentation/pages/register_2_ui.dart';
 import 'package:fitness_app/features/auth/presentation/pages/signin_ui.dart';
 import 'package:fitness_app/features/auth/presentation/pages/signup_ui.dart';
+import 'package:fitness_app/home_page.dart';
 // import 'package:fitness_app/features/auth/presentation/pages/signup_ui.dart';
 import 'package:fitness_app/init_dependency.dart';
 import 'package:flutter/material.dart';
@@ -59,27 +55,6 @@ class _MyAppState extends State<MyApp> {
   }
 }
 
-class HomeScreen extends StatelessWidget {
-  const HomeScreen({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        actions: [
-          IconButton(
-            icon: Icon(Icons.logout),
-            onPressed: () {
-              context.read<AuthBloc>().add(AuthLogOut());
-            },
-          ),
-        ],
-      ),
-      body: Center(child: Text('Home Screen')),
-    );
-  }
-}
-
 class AppScreen extends StatelessWidget {
   const AppScreen({super.key});
 
@@ -97,7 +72,7 @@ class AppScreen extends StatelessWidget {
           return Register2Ui();
         } else if (state is AppUserIsLoggedIn) {
           print('Cuurent Updated State: AppUserIsLoggedIn');
-          return HomeScreen();
+          return HomePage();
         } else if (state is AppLogInPage) {
           return LoginInPage(); // Not logged in
         } else if (state is AppSignUpPage) {

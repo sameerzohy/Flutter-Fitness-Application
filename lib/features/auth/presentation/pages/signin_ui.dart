@@ -1,7 +1,5 @@
 import 'package:fitness_app/core/cubits/cubit/app_user_cubit.dart';
-import 'package:fitness_app/core/entities/user.dart';
 import 'package:fitness_app/features/auth/presentation/bloc/auth_bloc.dart';
-import 'package:fitness_app/features/auth/presentation/pages/signup_ui.dart';
 import 'package:fitness_app/features/auth/presentation/widgets/auth_gradient_button.dart';
 import 'package:fitness_app/features/auth/presentation/widgets/auth_textfied.dart';
 import 'package:flutter/material.dart';

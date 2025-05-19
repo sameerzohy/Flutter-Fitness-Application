@@ -92,7 +92,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDatasource {
       final bmi = res.first['bmi'];
       final height = res.first['height'];
       final weight = res.first['weight'];
-      final date_of_birth = res.first['date_of_birth'];
+      final dateOfBirth = res.first['date_of_birth'];
       UserModel user = UserModel(
         id: id,
         name: name,
@@ -102,7 +102,7 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDatasource {
         bmi: bmi,
         height: height,
         weight: weight,
-        date_of_birth: date_of_birth,
+        date_of_birth: dateOfBirth,
       );
 
       return user;

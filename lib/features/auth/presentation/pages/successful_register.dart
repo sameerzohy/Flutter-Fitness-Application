@@ -2,6 +2,7 @@ import 'package:fitness_app/core/cubits/cubit/app_user_cubit.dart';
 import 'package:fitness_app/core/utilities/loader.dart';
 import 'package:fitness_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:fitness_app/features/auth/presentation/widgets/auth_gradient_button.dart';
+import 'package:fitness_app/home_page.dart';
 import 'package:fitness_app/main.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -23,7 +24,7 @@ class SuccessfulRegister extends StatelessWidget {
           return const Loader();
         }
         if (state is AppUserIsLoggedIn) {
-          return HomeScreen();
+          return HomePage();
         }
         return Scaffold(
           backgroundColor: Colors.white,
