@@ -64,11 +64,9 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     );
     res.fold(
       (l) {
-        print(l);
         emit(AuthFailure(message: l.message));
       },
       (user) {
-        print(user);
         emit(AuthSuccess(user));
         _appUserCubit.appLogInPage();
       },
@@ -80,7 +78,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     final res = await _currentUser(NoParams());
-    print(res);
     res.fold((l) => _emitAuthFailure(l.message, emit), (user) {
       _emitAuthSuccess(user, emit);
     });
@@ -98,7 +95,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         goal: event.goal,
       ),
     );
-    print(res);
 
     res.fold(
       (l) => _emitAuthFailure(l.message, emit),
@@ -119,7 +115,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   void _emitAuthSuccess(User user, Emitter<AuthState> emit) {
     _appUserCubit.updateUser(user);
-    print('Emitting Loader');
     // _appUserCubit.appUserLoader();
     emit(AuthSuccess(user));
   }

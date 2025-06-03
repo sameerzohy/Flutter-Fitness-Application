@@ -1,8 +1,5 @@
-import 'package:fitness_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:fitness_app/features/calorie_tracker/presentation/pages/calorie_screen.dart';
 import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:lucide_icons/lucide_icons.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});

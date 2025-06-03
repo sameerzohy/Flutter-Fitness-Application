@@ -28,4 +28,34 @@ class MealItemModel extends MealItem {
       unit: json['unit'],
     );
   }
+
+  Map<String, dynamic> toJson() {
+    return {
+      'id': mealId,
+      'name': foodName,
+      'calories': calories,
+      'protein': protein,
+      'carbs': carbs,
+      'fat': fat,
+      'fiber': fiber,
+      'sugar': sugar,
+      'quantity': quantity,
+      'unit': unit,
+    };
+  }
+
+  factory MealItemModel.fromMealItem(MealItem item) {
+    return MealItemModel(
+      mealId: item.mealId,
+      foodName: item.foodName,
+      calories: item.calories,
+      protein: item.protein,
+      carbs: item.carbs,
+      fat: item.fat,
+      fiber: item.fiber,
+      sugar: item.sugar,
+      quantity: item.quantity,
+      unit: item.unit,
+    );
+  }
 }

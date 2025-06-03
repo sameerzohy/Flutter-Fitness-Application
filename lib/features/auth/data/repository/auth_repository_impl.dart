@@ -53,7 +53,6 @@ class AuthRepositoryImpl implements AuthRepository {
         email: email,
         password: password,
       );
-      print('User: $user');
       return right(user);
     } on sb.AuthException catch (e) {
       return left(Failure(message: e.message));

@@ -129,7 +129,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDatasource {
               .eq('id', currentUserSession!.user.id)
               .select()
               .single();
-      print(res);
 
       UserModel user = UserModel(
         email: currentUserSession!.user.email!,
@@ -144,7 +143,6 @@ class AuthRemoteDataSourceImpl implements AuthRemoteDatasource {
       );
       return user;
     } catch (e) {
-      print(e.toString());
       throw ServerException(message: e.toString());
     }
   }

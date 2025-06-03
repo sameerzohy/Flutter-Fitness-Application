@@ -20,9 +20,11 @@ class MealTitle extends StatelessWidget {
           child: IconButton(
             icon: Icon(Icons.add),
             onPressed: () {
-              Navigator.of(
-                context,
-              ).push(MaterialPageRoute(builder: (cxt) => SearchMealPage()));
+              Navigator.of(context).push(
+                MaterialPageRoute(
+                  builder: (cxt) => SearchMealPage(mealTime: title, meals: []),
+                ),
+              );
             },
             color: Colors.black,
           ),

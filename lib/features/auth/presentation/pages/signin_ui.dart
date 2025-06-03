@@ -83,7 +83,6 @@ class _LoginInPageState extends State<LoginInPage> {
                           buttonText: 'Log In',
                           onPressed: () {
                             // context.read<AppUserCubit>().appUserLoader();
-                            print('Hello from SignIn Page');
                             context.read<AuthBloc>().add(
                               AuthLogIn(
                                 email: emailController.text.trim(),
