@@ -1,3 +1,11 @@
+import 'package:fitness_app/features/exercise_tracker/presentation/blocs/scheduled_workout/scheduled_workout_bloc.dart';
+import 'package:fitness_app/features/exercise_tracker/presentation/blocs/workout_history_bloc/workout_history_bloc.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:hive_flutter/hive_flutter.dart';
+import 'package:path_provider/path_provider.dart';
+
 import 'package:fitness_app/core/cubits/cubit/app_user_cubit.dart';
 import 'package:fitness_app/core/hive/local_user_data.dart';
 import 'package:fitness_app/core/local_remote_connection/local_remote_connection.dart';
@@ -13,13 +21,7 @@ import 'package:fitness_app/features/calorie_tracker/data/hive_models/hive_meal_
 import 'package:fitness_app/features/calorie_tracker/presentation/bloc/meal_track_bloc/meal_track_bloc.dart';
 import 'package:fitness_app/features/calorie_tracker/presentation/bloc/meal_utility_bloc/meal_utilities_bloc.dart';
 import 'package:fitness_app/home_page.dart';
-// import 'package:fitness_app/features/auth/presentation/pages/signup_ui.dart';
-import 'package:fitness_app/init_dependency.dart';
-import 'package:flutter/material.dart';
-// import 'package:animated_splash_screen/animated_splash_screen.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:hive/hive.dart';
-import 'package:path_provider/path_provider.dart';
+import 'package:fitness_app/init_dependency.dart'; // Make sure this defines `final sl = GetIt.instance;`
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -31,27 +33,24 @@ void main() async {
   Hive.registerAdapter(HiveDailyMealAdapter());
   Hive.registerAdapter(LocalUserDataAdapter());
 
-  // ✅ Open both boxes BEFORE DI is initialized
   await Hive.openBox<HiveDailyMeal>('daily_meals');
   await Hive.openBox<HiveMealItem>('daily_meal_box');
   await Hive.openBox<LocalUserData>('userBox');
+  await Hive.openBox<List>('workout_history');
 
   await initDependency();
-
-  // await refreshSession(serviceLocator());
-
-  await initializeUserData(serviceLocator());
-
-  await pushMealToSupabase(serviceLocator(), serviceLocator());
-  // ✅ Safe to initialize dependencies now
+  await initializeUserData(sl());
+  await pushMealToSupabase(sl(), sl());
 
   runApp(
     MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => serviceLocator<AuthBloc>()),
-        BlocProvider(create: (context) => serviceLocator<AppUserCubit>()),
-        BlocProvider(create: (context) => serviceLocator<MealTrackBloc>()),
-        BlocProvider(create: (context) => serviceLocator<MealUtilitiesBloc>()),
+        BlocProvider(create: (context) => sl<AuthBloc>()),
+        BlocProvider(create: (context) => sl<AppUserCubit>()),
+        BlocProvider(create: (context) => sl<MealTrackBloc>()),
+        BlocProvider(create: (context) => sl<MealUtilitiesBloc>()),
+        BlocProvider(create: (context) => sl<WorkoutHistoryBloc>()),
+        BlocProvider(create: (context) => sl<ScheduledWorkoutBloc>()),
       ],
       child: const MyApp(),
     ),
@@ -73,16 +72,17 @@ class _MyAppState extends State<MyApp> {
   }
 
   @override
+  void dispose() {
+    Hive.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Flutter Demo',
       theme: AppTheme.lightThemeMode,
-      home: AppScreen(),
-      // AnimatedSplashScreen(
-      //   splash: 'assets/gifs/homescreenGIF.gif',
-      //   splashIconSize: 500,
-      //   nextScreen: AppScreen(),
-      // ),
+      home: const AppScreen(),
     );
   }
 }
@@ -93,20 +93,23 @@ class AppScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocConsumer<AppUserCubit, AppUserState>(
-      listener: (context, state) {},
+      listener: (context, state) {
+        debugPrint('Bloc State Changed: $state');
+      },
       builder: (context, state) {
+        debugPrint('Current AppUserState: $state');
         if (state is AppUserLoading) {
-          return Loader();
+          return const Loader();
         } else if (state is AppGetUserInfo) {
-          return Register2Ui();
+          return const Register2Ui();
         } else if (state is AppUserIsLoggedIn) {
-          return HomePage();
+          return const HomePage();
         } else if (state is AppLogInPage) {
-          return LoginInPage(); // Not logged in
+          return const LoginInPage();
         } else if (state is AppSignUpPage) {
-          return SignUpPage();
+          return const SignUpPage();
         } else {
-          return Scaffold(body: Center(child: Text('Loading...')));
+          return const Scaffold(body: Center(child: Text('Loading...')));
         }
       },
     );

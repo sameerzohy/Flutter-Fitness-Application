@@ -1,0 +1,38 @@
+{
+  "full_body": [
+    { "title": "Jumping Jacks", "value": "30x", "image": "assets/images/jumping.png" },
+    { "title": "Push Ups", "value": "15x", "image": "assets/images/warmup.png" },
+    { "title": "Burpees", "value": "20x", "image": "assets/images/jumping.png" },
+    { "title": "Mountain Climbers", "value": "25x", "image": "assets/images/skipping.png" },
+    { "title": "High Knees", "value": "40x", "image": "assets/images/jumping.png" },
+    { "title": "Plank Jacks", "value": "30x", "image": "assets/images/skipping.png" },
+    { "title": "Side Lunges", "value": "20x", "image": "assets/images/warmup.png" },
+    { "title": "Tuck Jumps", "value": "15x", "image": "assets/images/jumping.png" },
+    { "title": "Bear Crawls", "value": "25x", "image": "assets/images/squats.png" },
+    { "title": "Speed Skaters", "value": "30x", "image": "assets/images/skipping.png" }
+  ],
+  "abs": [
+    { "title": "Crunches", "value": "20x", "image": "assets/images/jumping.png" },
+    { "title": "Leg Raises", "value": "15x", "image": "assets/images/skipping.png" },
+    { "title": "Plank", "value": "60s", "image": "assets/images/warmup.png" },
+    { "title": "Bicycle Crunches", "value": "30x", "image": "assets/images/skipping.png" },
+    { "title": "Flutter Kicks", "value": "40x", "image": "assets/images/jumping.png" },
+    { "title": "V-Ups", "value": "20x", "image": "assets/images/squats.png" },
+    { "title": "Sit-Ups", "value": "25x", "image": "assets/images/warmup.png" },
+    { "title": "Toe Touches", "value": "30x", "image": "assets/images/jumping.png" },
+    { "title": "Heel Taps", "value": "30x", "image": "assets/images/jumping.png" },
+    { "title": "Side Plank", "value": "30s each side", "image": "assets/images/skipping.png" }
+  ],
+  "lower_body": [
+    { "title": "Squats", "value": "25x", "image": "assets/images/squats.png" },
+    { "title": "Lunges", "value": "20x", "image": "assets/images/skipping.png" },
+    { "title": "Glute Bridges", "value": "20x", "image": "assets/images/warmup.png" },
+    { "title": "Wall Sit", "value": "60s", "image": "assets/images/skipping.png" },
+    { "title": "Step Ups", "value": "15x each leg", "image": "assets/images/squats.png" },
+    { "title": "Calf Raises", "value": "30x", "image": "assets/images/jumping.png" },
+    { "title": "Donkey Kicks", "value": "20x each leg", "image": "assets/images/squats.png" },
+    { "title": "Side Leg Raises", "value": "20x each side", "image": "assets/images/skipping.png" },
+    { "title": "Fire Hydrants", "value": "20x", "image": "assets/images/squats.png" },
+    { "title": "Jump Squats", "value": "15x", "image": "assets/images/jumping.png" }
+  ]
+}
