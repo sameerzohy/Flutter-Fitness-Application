@@ -20,11 +20,11 @@ import 'package:fitness_app/features/exercise_tracker/domain/usecases/workout_us
 import 'package:fitness_app/features/exercise_tracker/domain/usecases/workout_usecases/update_workout_history.dart';
 import 'package:fitness_app/features/exercise_tracker/presentation/blocs/scheduled_workout/scheduled_workout_bloc.dart';
 import 'package:fitness_app/features/exercise_tracker/presentation/blocs/workout_history_bloc/workout_history_bloc.dart';
+import 'package:fitness_app/features/home_screen/data/hive_models/other_tracker_hive.dart';
+import 'package:fitness_app/features/home_screen/presentation/bloc/sleep_tracker_bloc/sleep_tracker_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
 import 'package:supabase_flutter/supabase_flutter.dart';
-import 'package:uuid/uuid.dart';
-import 'package:flutter/material.dart';
 
 import 'package:fitness_app/core/secrets/secrets.dart';
 import 'package:fitness_app/core/cubits/cubit/app_user_cubit.dart';
@@ -55,96 +55,162 @@ import 'package:fitness_app/features/calorie_tracker/domain/usecases/meal_combo_
 import 'package:fitness_app/features/calorie_tracker/domain/usecases/nutrient_track_usecase.dart';
 import 'package:fitness_app/features/calorie_tracker/presentation/bloc/meal_track_bloc/meal_track_bloc.dart';
 import 'package:fitness_app/features/calorie_tracker/presentation/bloc/meal_utility_bloc/meal_utilities_bloc.dart';
+import 'package:fitness_app/features/home_screen/data/local_datasource/other_track_datasource.dart';
+import 'package:fitness_app/features/home_screen/data/repositories/other_tracker_repo_impl.dart';
+import 'package:fitness_app/features/home_screen/domain/repositiories/other_tracker_repo.dart';
+import 'package:fitness_app/features/home_screen/domain/usecases/other_track_usecase.dart';
+import 'package:fitness_app/features/home_screen/presentation/bloc/other_tracker_bloc/other_tracker_bloc.dart';
+// import 'package:fitness_app/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:hive/hive.dart';
+import 'package:uuid/uuid.dart';
 
 final sl = GetIt.instance;
 
 Future<void> initDependency() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  await Hive.openBox<List>('workout_history');
-  await Hive.openBox('meta_box');
-
-  await _initSupabase();
-  _initExternal();
   _initAuth();
+  _initMealTracking();
   _initWorkoutHistory();
   _initExercisesRepository();
   _initScheduling();
-  _initMealTracking();
-}
-
-Future<void> _initSupabase() async {
+  _initExternal();
+  _otherTrack();
   final supabase = await Supabase.initialize(
     url: Secrets.url,
     anonKey: Secrets.anonKey,
   );
-  sl.registerLazySingleton<SupabaseClient>(() => supabase.client);
+  // print('supabase Client: ${supabase.client}');
+
+  sl.registerLazySingleton(() => supabase.client);
+
+  sl.registerLazySingleton(
+    () => Hive.box<OtherTrackerHive>('other_tracker_hive'),
+  );
+
+  sl.registerLazySingleton<AppUserCubit>(() => AppUserCubit());
 }
 
 void _initExternal() {
   sl.registerLazySingleton<Box<List>>(() => Hive.box<List>('workout_history'));
   sl.registerLazySingleton<Box>(() => Hive.box('meta_box'));
   sl.registerLazySingleton(() => const Uuid());
-  sl.registerLazySingleton<AppUserCubit>(() => AppUserCubit());
+}
+
+void _otherTrack() {
+  sl.registerFactory<OtherTrackLocalDatasource>(
+    () => OtherTrackDatasourceImpl(sl()),
+  );
+
+  sl.registerFactory<OtherTrackerRepository>(
+    () => OtherTrackerRepositoryImpl(otherTrackerDatasource: sl()),
+  );
+
+  sl.registerFactory<GetWaterTrackerUsecase>(
+    () => GetWaterTrackerUsecase(otherTrackerRepository: sl()),
+  );
+
+  sl.registerFactory<UpdateWaterTrackerUsecase>(
+    () => UpdateWaterTrackerUsecase(otherTrackerRepository: sl()),
+  );
+
+  sl.registerFactory<UpdateSleepUsecase>(
+    () => UpdateSleepUsecase(otherTrackerRepository: sl()),
+  );
+
+  sl.registerFactory<GetSleepTrackerUsecase>(
+    () => GetSleepTrackerUsecase(otherTrackerRepository: sl()),
+  );
+
+  sl.registerFactory<OtherTrackerBloc>(
+    () => OtherTrackerBloc(
+      getWaterTrackerUsecase: sl(),
+      updateWaterTrackerUsecase: sl(),
+    ),
+  );
+
+  sl.registerFactory<SleepTrackerBloc>(
+    () => SleepTrackerBloc(
+      updateSleepUsecase: sl(),
+      getSleepTrackerUsecase: sl(),
+    ),
+  );
 }
 
 void _initAuth() {
-  sl.registerFactory<AuthRemoteDatasource>(() => AuthRemoteDataSourceImpl(supabaseClient: sl()));
-  sl.registerFactory<AuthRepository>(() => AuthRepositoryImpl(authRemoteDatasource: sl()));
-  sl.registerFactory<UserSignupUsecase>(() => UserSignupUsecase(authRepository: sl()));
-  sl.registerFactory<UserLoginUseCase>(() => UserLoginUseCase(authRepository: sl()));
+  sl.registerFactory<AuthRemoteDatasource>(
+    () => AuthRemoteDataSourceImpl(supabaseClient: sl()),
+  );
+  sl.registerFactory<AuthRepository>(
+    () => AuthRepositoryImpl(authRemoteDatasource: sl()),
+  );
+  sl.registerFactory<UserSignupUsecase>(
+    () => UserSignupUsecase(authRepository: sl()),
+  );
+  sl.registerFactory<UserLoginUseCase>(
+    () => UserLoginUseCase(authRepository: sl()),
+  );
   sl.registerFactory<CurrentUser>(() => CurrentUser(sl()));
-  sl.registerFactory<UpdateUserUsecase>(() => UpdateUserUsecase(authRepository: sl()));
+  sl.registerFactory<UpdateUserUsecase>(
+    () => UpdateUserUsecase(authRepository: sl()),
+  );
   sl.registerFactory<UserLogoutUsecase>(() => UserLogoutUsecase(sl()));
-  sl.registerLazySingleton<AuthBloc>(() => AuthBloc(
-        userLoginUseCase: sl(),
-        userSignupUsecase: sl(),
-        currentUser: sl(),
-        appUserCubit: sl(),
-        updateUserUsecase: sl(),
-        userLogoutUsecase: sl(),
-      ));
+  sl.registerLazySingleton<AuthBloc>(
+    () => AuthBloc(
+      userLoginUseCase: sl(),
+      userSignupUsecase: sl(),
+      currentUser: sl(),
+      appUserCubit: sl(),
+      updateUserUsecase: sl(),
+      userLogoutUsecase: sl(),
+    ),
+  );
 }
 
 void _initWorkoutHistory() {
-  sl.registerFactory(() => WorkoutHistoryBloc(
-        loadWorkoutHistoryUseCase: sl(),
-        loadAllWorkoutHistoryUseCase: sl(),
-        saveWorkoutHistoryUseCase: sl(),
-        updateWorkoutHistoryUseCase: sl(),
-        deleteWorkoutHistoryUseCase: sl(),
-        clearWorkoutHistoryUseCase: sl(),
-      ));
+  sl.registerFactory(
+    () => WorkoutHistoryBloc(
+      loadWorkoutHistoryUseCase: sl(),
+      loadAllWorkoutHistoryUseCase: sl(),
+      saveWorkoutHistoryUseCase: sl(),
+      updateWorkoutHistoryUseCase: sl(),
+      deleteWorkoutHistoryUseCase: sl(),
+      clearWorkoutHistoryUseCase: sl(),
+    ),
+  );
 
-  sl.registerLazySingleton(() => LoadWorkoutHistory(sl()));
-  sl.registerLazySingleton(() => SaveWorkoutHistory(sl()));
-  sl.registerLazySingleton(() => LoadAllWorkoutHistory(sl()));
-  sl.registerLazySingleton(() => UpdateWorkoutHistory(sl()));
-  sl.registerLazySingleton(() => DeleteWorkoutHistory(sl()));
-  sl.registerLazySingleton(() => ClearWorkoutHistory(sl()));
+  sl.registerFactory(() => LoadWorkoutHistory(sl()));
+  sl.registerFactory(() => SaveWorkoutHistory(sl()));
+  sl.registerFactory(() => LoadAllWorkoutHistory(sl()));
+  sl.registerFactory(() => UpdateWorkoutHistory(sl()));
+  sl.registerFactory(() => DeleteWorkoutHistory(sl()));
+  sl.registerFactory(() => ClearWorkoutHistory(sl()));
 
-  sl.registerLazySingleton<WorkoutRepository>(
+  sl.registerFactory<WorkoutRepository>(
     () => WorkoutRepositoryImpl(localDataSource: sl(), remoteDataSource: sl()),
   );
 
-  sl.registerLazySingleton<WorkoutLocalDataSource>(
+  sl.registerFactory<WorkoutLocalDataSource>(
     () => WorkoutLocalDataSourceImpl(historyBox: sl(), metaBox: sl()),
   );
 
-  sl.registerLazySingleton<WorkoutRemoteDataSource>(
+  sl.registerFactory<WorkoutRemoteDataSource>(
     () => WorkoutRemoteDataSourceImpl(supabaseClient: sl(), uuid: sl()),
   );
 }
 
 void _initExercisesRepository() {
-  sl.registerLazySingleton<ExercisesRepository>(() => ExercisesRepositoryImpl());
+  sl.registerLazySingleton<ExercisesRepository>(
+    () => ExercisesRepositoryImpl(),
+  );
 }
 
 void _initScheduling() {
   sl.registerLazySingleton<ScheduledWorkoutRemoteDataSource>(
-      () => ScheduledWorkoutRemoteDataSourceImpl(sl()));
+    () => ScheduledWorkoutRemoteDataSourceImpl(sl()),
+  );
 
   sl.registerLazySingleton<ScheduledWorkoutRepository>(
-      () => ScheduledWorkoutRepositoryImpl(sl()));
+    () => ScheduledWorkoutRepositoryImpl(sl()),
+  );
 
   sl.registerLazySingleton(() => CreateScheduledWorkout(sl()));
   sl.registerLazySingleton(() => FetchAllScheduledWorkouts(sl()));
@@ -153,45 +219,71 @@ void _initScheduling() {
 
   sl.registerLazySingleton<FetchExercises>(() => FetchExercises(sl()));
 
-  sl.registerFactory(() => ScheduledWorkoutBloc(
-        createScheduledWorkout: sl(),
-        updateScheduledWorkout: sl(),
-        deleteScheduledWorkout: sl(),
-        fetchAllScheduledWorkouts: sl<FetchAllScheduledWorkouts>(),
-        supabaseClient: sl(),
-      ));
+  sl.registerFactory(
+    () => ScheduledWorkoutBloc(
+      createScheduledWorkout: sl(),
+      updateScheduledWorkout: sl(),
+      deleteScheduledWorkout: sl(),
+      fetchAllScheduledWorkouts: sl<FetchAllScheduledWorkouts>(),
+      supabaseClient: sl(),
+    ),
+  );
 }
 
 void _initMealTracking() {
   sl.registerLazySingleton(() => Hive.box<HiveMealItem>('daily_meal_box'));
 
-  sl.registerFactory<MealTrackLocalDataSource>(() => MealTrackLocalDataSourceImpl(sl()));
-  sl.registerFactory<MealTrackLocalRepository>(() => MealTrackLocalReposityImpl(sl()));
+  sl.registerFactory<MealTrackLocalDataSource>(
+    () => MealTrackLocalDataSourceImpl(sl()),
+  );
+  sl.registerFactory<MealTrackLocalRepository>(
+    () => MealTrackLocalReposityImpl(sl()),
+  );
   sl.registerFactory<AddMealLocalUsecase>(() => AddMealLocalUsecase(sl()));
   sl.registerFactory<GetMealLocalUsecase>(() => GetMealLocalUsecase(sl()));
-  sl.registerFactory<DeleteMealLocalUsecase>(() => DeleteMealLocalUsecase(sl()));
-  sl.registerFactory<NutrientTrackRemoteDataSource>(() => NutrientTrackRemoteDataSourceImpl(sl()));
-  sl.registerFactory<NutrientTrackRepository>(() => NutrientTrackRepositoryImpl(sl()));
+  sl.registerFactory<DeleteMealLocalUsecase>(
+    () => DeleteMealLocalUsecase(sl()),
+  );
+  sl.registerFactory<NutrientTrackRemoteDataSource>(
+    () => NutrientTrackRemoteDataSourceImpl(sl()),
+  );
+  sl.registerFactory<NutrientTrackRepository>(
+    () => NutrientTrackRepositoryImpl(sl()),
+  );
   sl.registerFactory<NutrientTrackUsecase>(() => NutrientTrackUsecase(sl()));
 
-  sl.registerLazySingleton<MealTrackBloc>(() => MealTrackBloc(
-        addMealLocalUsecase: sl(),
-        getMealLocalUsecase: sl(),
-        deleteMealLocalUsecase: sl(),
-        nutrientTrackUsecase: sl(),
-      ));
+  sl.registerLazySingleton<MealTrackBloc>(
+    () => MealTrackBloc(
+      addMealLocalUsecase: sl(),
+      getMealLocalUsecase: sl(),
+      deleteMealLocalUsecase: sl(),
+      nutrientTrackUsecase: sl(),
+    ),
+  );
 
   sl.registerFactory<SaveMealComboRemote>(() => SaveMealComboRemoteImpl(sl()));
-  sl.registerFactory<SaveMealComboRepository>(() => SaveMealComboRepositoryImpl(saveMealComboRemote: sl()));
-  sl.registerFactory<AddMealComboUsecase>(() => AddMealComboUsecase(repository: sl()));
-  sl.registerFactory<GetMealComboUsecase>(() => GetMealComboUsecase(repository: sl()));
-  sl.registerFactory<DeleteMealComboUsecase>(() => DeleteMealComboUsecase(repository: sl()));
-  sl.registerFactory<UpdateMealComboUsecase>(() => UpdateMealComboUsecase(repository: sl()));
+  sl.registerFactory<SaveMealComboRepository>(
+    () => SaveMealComboRepositoryImpl(saveMealComboRemote: sl()),
+  );
+  sl.registerFactory<AddMealComboUsecase>(
+    () => AddMealComboUsecase(repository: sl()),
+  );
+  sl.registerFactory<GetMealComboUsecase>(
+    () => GetMealComboUsecase(repository: sl()),
+  );
+  sl.registerFactory<DeleteMealComboUsecase>(
+    () => DeleteMealComboUsecase(repository: sl()),
+  );
+  sl.registerFactory<UpdateMealComboUsecase>(
+    () => UpdateMealComboUsecase(repository: sl()),
+  );
 
-  sl.registerLazySingleton<MealUtilitiesBloc>(() => MealUtilitiesBloc(
-        addMealComboUsecase: sl(),
-        getMealComboUsecase: sl(),
-        deleteMealComboUsecase: sl(),
-        updateMealComboUsecase: sl(),
-      ));
+  sl.registerLazySingleton<MealUtilitiesBloc>(
+    () => MealUtilitiesBloc(
+      addMealComboUsecase: sl(),
+      getMealComboUsecase: sl(),
+      deleteMealComboUsecase: sl(),
+      updateMealComboUsecase: sl(),
+    ),
+  );
 }

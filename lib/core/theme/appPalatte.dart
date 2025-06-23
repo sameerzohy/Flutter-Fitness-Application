@@ -37,4 +37,6 @@ static final Color greycard2 = Colors.grey[600]!;
     1,
   );
   static const Color whiteColor = Colors.white;
+  static const Color greenLinear1 = Color.fromRGBO(0, 255, 102, 1);
+  static const Color greenLiner2 = Color.fromRGBO(0, 255, 240, 1);
 }

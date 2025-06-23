@@ -132,8 +132,24 @@ class _CalorieScreenState extends State<CalorieScreen> {
                         child: InkWell(
                           onTap: () {
                             Navigator.of(context).push(
-                              MaterialPageRoute(
-                                builder: (cxt) => SaveMealsRemote(),
+                              PageRouteBuilder(
+                                transitionDuration: const Duration(
+                                  milliseconds: 150,
+                                ),
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        SaveMealsRemote(),
+                                transitionsBuilder: (
+                                  context,
+                                  animation,
+                                  secondaryAnimation,
+                                  child,
+                                ) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
                               ),
                             );
                           },
@@ -153,11 +169,25 @@ class _CalorieScreenState extends State<CalorieScreen> {
                       Expanded(
                         child: InkWell(
                           onTap: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder:
-                                    (context) => const MealNutrientAnalysis(),
+                            Navigator.of(context).push(
+                              PageRouteBuilder(
+                                transitionDuration: const Duration(
+                                  milliseconds: 150,
+                                ),
+                                pageBuilder:
+                                    (context, animation, secondaryAnimation) =>
+                                        MealNutrientAnalysis(),
+                                transitionsBuilder: (
+                                  context,
+                                  animation,
+                                  secondaryAnimation,
+                                  child,
+                                ) {
+                                  return FadeTransition(
+                                    opacity: animation,
+                                    child: child,
+                                  );
+                                },
                               ),
                             );
                           },

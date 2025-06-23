@@ -21,8 +21,19 @@ class MealTitle extends StatelessWidget {
             icon: Icon(Icons.add),
             onPressed: () {
               Navigator.of(context).push(
-                MaterialPageRoute(
-                  builder: (cxt) => SearchMealPage(mealTime: title, meals: []),
+                PageRouteBuilder(
+                  transitionDuration: const Duration(milliseconds: 150),
+                  pageBuilder:
+                      (context, animation, secondaryAnimation) =>
+                          SearchMealPage(mealTime: title, meals: []),
+                  transitionsBuilder: (
+                    context,
+                    animation,
+                    secondaryAnimation,
+                    child,
+                  ) {
+                    return FadeTransition(opacity: animation, child: child);
+                  },
                 ),
               );
             },

@@ -1,5 +1,6 @@
 import 'package:fitness_app/features/exercise_tracker/presentation/blocs/scheduled_workout/scheduled_workout_bloc.dart';
 import 'package:fitness_app/features/exercise_tracker/presentation/blocs/workout_history_bloc/workout_history_bloc.dart';
+import 'package:fitness_app/features/home_screen/presentation/bloc/sleep_tracker_bloc/sleep_tracker_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:hive/hive.dart';
@@ -10,7 +11,9 @@ import 'package:fitness_app/core/cubits/cubit/app_user_cubit.dart';
 import 'package:fitness_app/core/hive/local_user_data.dart';
 import 'package:fitness_app/core/local_remote_connection/local_remote_connection.dart';
 import 'package:fitness_app/core/local_remote_connection/meal_push_remote.dart';
+import 'package:fitness_app/core/notifications/local_push_notifications.dart';
 import 'package:fitness_app/core/theme/theme.dart';
+import 'package:fitness_app/core/utilities/init_other_tracker.dart';
 import 'package:fitness_app/core/utilities/loader.dart';
 import 'package:fitness_app/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:fitness_app/features/auth/presentation/pages/register_2_ui.dart';
@@ -20,11 +23,17 @@ import 'package:fitness_app/features/calorie_tracker/data/hive_models/hive_daily
 import 'package:fitness_app/features/calorie_tracker/data/hive_models/hive_meal_item.dart';
 import 'package:fitness_app/features/calorie_tracker/presentation/bloc/meal_track_bloc/meal_track_bloc.dart';
 import 'package:fitness_app/features/calorie_tracker/presentation/bloc/meal_utility_bloc/meal_utilities_bloc.dart';
+import 'package:fitness_app/features/home_screen/data/hive_models/other_tracker_hive.dart';
+import 'package:fitness_app/features/home_screen/presentation/bloc/other_tracker_bloc/other_tracker_bloc.dart';
 import 'package:fitness_app/home_page.dart';
-import 'package:fitness_app/init_dependency.dart'; // Make sure this defines `final sl = GetIt.instance;`
+// import 'package:fitness_app/features/auth/presentation/pages/signup_ui.dart';
+import 'package:fitness_app/init_dependency.dart';
+// import 'package:animated_splash_screen/animated_splash_screen.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
+
+  await NotificationService.setupNotifications();
 
   final dir = await getApplicationDocumentsDirectory();
   Hive.init(dir.path);
@@ -32,15 +41,25 @@ void main() async {
   Hive.registerAdapter(HiveMealItemAdapter());
   Hive.registerAdapter(HiveDailyMealAdapter());
   Hive.registerAdapter(LocalUserDataAdapter());
+  Hive.registerAdapter(OtherTrackerHiveAdapter());
 
   await Hive.openBox<HiveDailyMeal>('daily_meals');
   await Hive.openBox<HiveMealItem>('daily_meal_box');
   await Hive.openBox<LocalUserData>('userBox');
   await Hive.openBox<List>('workout_history');
+  await Hive.openBox<OtherTrackerHive>('other_tracker_hive');
+  await Hive.openBox('meta_box');
 
   await initDependency();
+
+  // await refreshSession(serviceLocator());
+
   await initializeUserData(sl());
+
   await pushMealToSupabase(sl(), sl());
+  // ✅ Safe to initialize dependencies now
+
+  await initOtherTracker(sl());
 
   runApp(
     MultiBlocProvider(
@@ -51,6 +70,8 @@ void main() async {
         BlocProvider(create: (context) => sl<MealUtilitiesBloc>()),
         BlocProvider(create: (context) => sl<WorkoutHistoryBloc>()),
         BlocProvider(create: (context) => sl<ScheduledWorkoutBloc>()),
+        BlocProvider(create: (context) => sl<OtherTrackerBloc>()),
+        BlocProvider(create: (context) => sl<SleepTrackerBloc>()),
       ],
       child: const MyApp(),
     ),

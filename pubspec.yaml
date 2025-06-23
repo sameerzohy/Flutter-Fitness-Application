@@ -25,6 +25,11 @@ dependencies:
   fl_chart: ^1.0.0
   shared_preferences: ^2.5.3
   dartz: ^0.10.1
+  flutter_local_notifications: ^19.2.1
+  timezone: ^0.10.1
+  pie_chart: ^5.4.0
+  syncfusion_flutter_charts: ^29.2.10
+
 
 dev_dependencies:
   flutter_test:
@@ -45,6 +50,9 @@ flutter:
     - assets/data/food_details.json
     - assets/data/workouts.json
     - assets/images/food_details_cover.jpg
+    - assets/images/glass_with_water.png
+    - assets/images/wake-up-icon.png
+    - assets/images/shoe-running-icon.png
     - assets/images/fullbody1.png
     - assets/images/lowerbody.png
     - assets/images/ab.png
