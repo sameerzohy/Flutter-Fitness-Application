@@ -33,7 +33,7 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       // Optionally, sync remote history to local cache here
       // For simplicity, we'll just return remote history if local was empty
       return Right(remoteHistory);
-    } on Failure catch (e) {
+    } on Failure {
       // If local fails, try remote
       try {
         final remoteHistory = await remoteDataSource.loadWorkoutHistory(
@@ -43,8 +43,6 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       } on Failure catch (e) {
         return Left(Failure(message: e.message));
       }
-    } on Failure catch (e) {
-      return Left(Failure(message: e.message));
     } catch (e) {
       return Left(Failure(message: 'An unexpected error occurred: $e'));
     }
@@ -69,8 +67,6 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       );
       await remoteDataSource.saveWorkoutHistory(workoutModel);
       return Right(unit);
-    } on Failure catch (e) {
-      return Left(Failure(message: e.message));
     } on Failure catch (e) {
       return Left(Failure(message: e.message));
     } catch (e) {
@@ -99,8 +95,6 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       return Right(unit);
     } on Failure catch (e) {
       return Left(Failure(message: e.message));
-    } on Failure catch (e) {
-      return Left(Failure(message: e.message));
     } catch (e) {
       return Left(Failure(message: 'An unexpected error occurred: $e'));
     }
@@ -117,15 +111,13 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
 
       final remoteHistory = await remoteDataSource.loadAllWorkoutHistory();
       return Right(remoteHistory);
-    } on Failure catch (e) {
+    } on Failure {
       try {
         final remoteHistory = await remoteDataSource.loadAllWorkoutHistory();
         return Right(remoteHistory);
       } on Failure catch (e) {
         return Left(Failure(message: e.message));
       }
-    } on Failure catch (e) {
-      return Left(Failure(message: e.message));
     } catch (e) {
       return Left(Failure(message: 'An unexpected error occurred: $e'));
     }
@@ -144,8 +136,6 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       return Right(unit);
     } on Failure catch (e) {
       return Left(Failure(message: e.message));
-    } on Failure catch (e) {
-      return Left(Failure(message: e.message));
     } catch (e) {
       return Left(Failure(message: 'An unexpected error occurred: $e'));
     }
@@ -157,8 +147,6 @@ class WorkoutRepositoryImpl implements WorkoutRepository {
       await localDataSource.clearWorkoutHistory(exerciseId);
       await remoteDataSource.clearWorkoutHistory(exerciseId);
       return Right(unit);
-    } on Failure catch (e) {
-      return Left(Failure(message: e.message));
     } on Failure catch (e) {
       return Left(Failure(message: e.message));
     } catch (e) {

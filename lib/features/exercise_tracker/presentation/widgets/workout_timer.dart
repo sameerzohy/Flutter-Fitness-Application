@@ -1,5 +1,4 @@
 import 'dart:async';
-import 'package:fitness_app/core/cubits/cubit/app_user_cubit.dart';
 import 'package:fitness_app/features/exercise_tracker/domain/entities/workout_history_entity.dart';
 import 'package:fitness_app/features/exercise_tracker/presentation/blocs/workout_history_bloc/workout_history_bloc.dart';
 import 'package:fitness_app/features/exercise_tracker/presentation/blocs/workout_history_bloc/workout_history_event.dart';
@@ -18,10 +17,10 @@ class WorkoutTimer extends StatefulWidget {
   final ExerciseEntity exercise;
 
   const WorkoutTimer({
-    Key? key,
+    super.key,
     required this.onFinish,
     required this.exercise,
-  }) : super(key: key);
+  });
 
   @override
   State<WorkoutTimer> createState() => _WorkoutTimerState();
@@ -37,7 +36,9 @@ class _WorkoutTimerState extends State<WorkoutTimer> {
   void initState() {
     super.initState();
     // Load history when the widget initializes, filtered by exerciseId
-    context.read<WorkoutHistoryBloc>().add(LoadWorkoutHistory(exerciseId: widget.exercise.name));
+    context.read<WorkoutHistoryBloc>().add(
+      LoadWorkoutHistory(exerciseId: widget.exercise.name),
+    );
   }
 
   void _startTimer() {
@@ -70,18 +71,23 @@ class _WorkoutTimerState extends State<WorkoutTimer> {
       final now = DateTime.now();
       // Accessing SupabaseClient via GetIt for userId for demonstration.
       // In a real app, you might pass the userId through the BLoC or use a dedicated auth service.
-      final userId = Supabase.instance.client.auth.currentUser?.id ?? const Uuid().v4();
+      final userId =
+          Supabase.instance.client.auth.currentUser?.id ?? const Uuid().v4();
       print(userId);
 
       final workoutHistory = WorkoutHistoryEntity(
-        id: const Uuid().v4(), // Generate a unique ID for this new workout entry
+        id:
+            const Uuid()
+                .v4(), // Generate a unique ID for this new workout entry
         userId: userId,
         exerciseId: widget.exercise.name,
         timestamp: now,
         duration: _totalSeconds,
         insertedAt: now,
       );
-      context.read<WorkoutHistoryBloc>().add(SaveWorkoutHistoryEvent(workout: workoutHistory));
+      context.read<WorkoutHistoryBloc>().add(
+        SaveWorkoutHistoryEvent(workout: workoutHistory),
+      );
     }
 
     setState(() {
@@ -98,26 +104,27 @@ class _WorkoutTimerState extends State<WorkoutTimer> {
         return AlertDialog(
           title: const Text('Select Workout Duration (minutes)'),
           content: StatefulBuilder(
-            builder: (context, setDialogState) => SizedBox(
-              height: 150,
-              child: Column(
-                children: [
-                  Slider(
-                    min: 1,
-                    max: 30,
-                    divisions: 29,
-                    label: '$tempSelected min',
-                    value: tempSelected.toDouble(),
-                    onChanged: (value) {
-                      setDialogState(() {
-                        tempSelected = value.toInt();
-                      });
-                    },
+            builder:
+                (context, setDialogState) => SizedBox(
+                  height: 150,
+                  child: Column(
+                    children: [
+                      Slider(
+                        min: 1,
+                        max: 30,
+                        divisions: 29,
+                        label: '$tempSelected min',
+                        value: tempSelected.toDouble(),
+                        onChanged: (value) {
+                          setDialogState(() {
+                            tempSelected = value.toInt();
+                          });
+                        },
+                      ),
+                      Text('$tempSelected minutes'),
+                    ],
                   ),
-                  Text('$tempSelected minutes'),
-                ],
-              ),
-            ),
+                ),
           ),
           actions: [
             TextButton(
@@ -163,7 +170,9 @@ class _WorkoutTimerState extends State<WorkoutTimer> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Confirm Deletion'),
-          content: const Text('Are you sure you want to delete this workout entry?'),
+          content: const Text(
+            'Are you sure you want to delete this workout entry?',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
@@ -181,11 +190,11 @@ class _WorkoutTimerState extends State<WorkoutTimer> {
 
     if (confirm == true) {
       context.read<WorkoutHistoryBloc>().add(
-            DeleteWorkoutHistoryEvent(
-              exerciseId: workout.exerciseId,
-              workoutId: workout.id,
-            ),
-          );
+        DeleteWorkoutHistoryEvent(
+          exerciseId: workout.exerciseId,
+          workoutId: workout.id,
+        ),
+      );
     }
   }
 
@@ -195,7 +204,9 @@ class _WorkoutTimerState extends State<WorkoutTimer> {
       builder: (context) {
         return AlertDialog(
           title: const Text('Confirm Clear All'),
-          content: const Text('Are you sure you want to delete ALL workout entries for this exercise? This action cannot be undone.'),
+          content: const Text(
+            'Are you sure you want to delete ALL workout entries for this exercise? This action cannot be undone.',
+          ),
           actions: [
             TextButton(
               onPressed: () => Navigator.pop(context, false),
@@ -213,11 +224,10 @@ class _WorkoutTimerState extends State<WorkoutTimer> {
 
     if (confirm == true) {
       context.read<WorkoutHistoryBloc>().add(
-            ClearAllWorkoutHistory(exerciseId: exerciseId),
-          );
+        ClearAllWorkoutHistory(exerciseId: exerciseId),
+      );
     }
   }
-
 
   @override
   void dispose() {
@@ -246,14 +256,17 @@ class _WorkoutTimerState extends State<WorkoutTimer> {
                     value: progress,
                     strokeWidth: 10,
                     backgroundColor: AppPallete.greyColor.withOpacity(0.3),
-                    valueColor:
-                        AlwaysStoppedAnimation<Color>(AppPallete.gradient2),
+                    valueColor: AlwaysStoppedAnimation<Color>(
+                      AppPallete.gradient2,
+                    ),
                   ),
                 ),
                 Text(
                   _formatTime(_remainingSeconds),
                   style: const TextStyle(
-                      fontSize: 36, fontWeight: FontWeight.bold),
+                    fontSize: 36,
+                    fontWeight: FontWeight.bold,
+                  ),
                 ),
               ],
             ),
@@ -283,9 +296,10 @@ class _WorkoutTimerState extends State<WorkoutTimer> {
               ),
               const SizedBox(width: 12),
               ElevatedButton.icon(
-                onPressed: _isRunning || _remainingSeconds != _totalSeconds
-                    ? () => _stopTimer(saveHistory: true)
-                    : null,
+                onPressed:
+                    _isRunning || _remainingSeconds != _totalSeconds
+                        ? () => _stopTimer(saveHistory: true)
+                        : null,
                 icon: const Icon(Icons.stop),
                 label: const Text('Stop'),
                 style: ElevatedButton.styleFrom(
@@ -311,9 +325,12 @@ class _WorkoutTimerState extends State<WorkoutTimer> {
                 return const Center(child: CircularProgressIndicator());
               } else if (state is WorkoutHistoryLoaded) {
                 // Filter history to only show entries matching the current exerciseId
-                final filteredHistory = state.history
-                    .where((item) => item.exerciseId == widget.exercise.name)
-                    .toList();
+                final filteredHistory =
+                    state.history
+                        .where(
+                          (item) => item.exerciseId == widget.exercise.name,
+                        )
+                        .toList();
 
                 if (filteredHistory.isEmpty) {
                   return const Text('No previous workouts for this exercise.');
@@ -325,13 +342,24 @@ class _WorkoutTimerState extends State<WorkoutTimer> {
                       children: [
                         const Text(
                           'Previous Workouts',
-                          style: TextStyle(fontSize: 20, fontWeight: FontWeight.bold),
+                          style: TextStyle(
+                            fontSize: 20,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         TextButton.icon(
-                          onPressed: () => _confirmAndClearAllWorkouts(widget.exercise.name),
-                          icon: const Icon(Icons.delete_forever, color: Colors.red),
-                          label: const Text('Clear All',
-                              style: TextStyle(color: Colors.red)),
+                          onPressed:
+                              () => _confirmAndClearAllWorkouts(
+                                widget.exercise.name,
+                              ),
+                          icon: const Icon(
+                            Icons.delete_forever,
+                            color: Colors.red,
+                          ),
+                          label: const Text(
+                            'Clear All',
+                            style: TextStyle(color: Colors.red),
+                          ),
                         ),
                       ],
                     ),
@@ -342,8 +370,9 @@ class _WorkoutTimerState extends State<WorkoutTimer> {
                       physics: const NeverScrollableScrollPhysics(),
                       itemBuilder: (context, index) {
                         final item = filteredHistory[index];
-                        final formattedDate =
-                            DateFormat('EEEE, MMM d • hh:mm a').format(item.timestamp);
+                        final formattedDate = DateFormat(
+                          'EEEE, MMM d • hh:mm a',
+                        ).format(item.timestamp);
                         final durationMins = item.duration ~/ 60;
                         return Container(
                           margin: const EdgeInsets.symmetric(vertical: 6),
@@ -355,24 +384,31 @@ class _WorkoutTimerState extends State<WorkoutTimer> {
                                 color: Colors.black.withOpacity(0.05),
                                 blurRadius: 8,
                                 offset: const Offset(0, 3),
-                              )
+                              ),
                             ],
                           ),
                           child: ListTile(
                             contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 16, vertical: 8),
-                            leading: const Icon(Icons.fitness_center,
-                                color: Colors.deepPurple),
+                              horizontal: 16,
+                              vertical: 8,
+                            ),
+                            leading: const Icon(
+                              Icons.fitness_center,
+                              color: Colors.deepPurple,
+                            ),
                             title: Text(
                               '${item.exerciseId} – $durationMins minutes',
                               style: const TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.w600),
+                                fontSize: 16,
+                                fontWeight: FontWeight.w600,
+                              ),
                             ),
                             subtitle: Text(
                               formattedDate,
                               style: const TextStyle(color: Colors.grey),
                             ),
-                            trailing: IconButton( // Only delete icon remains
+                            trailing: IconButton(
+                              // Only delete icon remains
                               icon: const Icon(Icons.delete, color: Colors.red),
                               onPressed: () => _confirmAndDeleteWorkout(item),
                             ),

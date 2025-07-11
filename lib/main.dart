@@ -1,5 +1,8 @@
+import 'package:fitness_app/core/local_remote_connection/push_other_tracker.dart';
 import 'package:fitness_app/features/exercise_tracker/presentation/blocs/scheduled_workout/scheduled_workout_bloc.dart';
 import 'package:fitness_app/features/exercise_tracker/presentation/blocs/workout_history_bloc/workout_history_bloc.dart';
+import 'package:fitness_app/features/home_screen/presentation/bloc/date_selector_cubit.dart';
+import 'package:fitness_app/features/home_screen/presentation/bloc/get_remote_tracker/get_remote_tracker_bloc.dart';
 import 'package:fitness_app/features/home_screen/presentation/bloc/sleep_tracker_bloc/sleep_tracker_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -59,6 +62,8 @@ void main() async {
   await pushMealToSupabase(sl(), sl());
   // ✅ Safe to initialize dependencies now
 
+  await pushOtherTrackerToSupabase(sl(), sl());
+
   await initOtherTracker(sl());
 
   runApp(
@@ -72,6 +77,8 @@ void main() async {
         BlocProvider(create: (context) => sl<ScheduledWorkoutBloc>()),
         BlocProvider(create: (context) => sl<OtherTrackerBloc>()),
         BlocProvider(create: (context) => sl<SleepTrackerBloc>()),
+        BlocProvider(create: (context) => sl<DateSelectorCubit>()),
+        BlocProvider(create: (context) => sl<GetRemoteTrackerBloc>()),
       ],
       child: const MyApp(),
     ),

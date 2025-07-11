@@ -7,11 +7,11 @@ class WorkoutTile extends StatelessWidget {
   final String imgPath;
 
   const WorkoutTile({
-    Key? key,
+    super.key,
     required this.title,
     required this.time,
     required this.imgPath,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -34,10 +34,17 @@ class WorkoutTile extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600)),
-                Text(time,
-                    style: TextStyle(color: Colors.grey[600], fontSize: 14)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                Text(
+                  time,
+                  style: TextStyle(color: Colors.grey[600], fontSize: 14),
+                ),
               ],
             ),
           ),

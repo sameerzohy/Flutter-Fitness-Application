@@ -8,12 +8,12 @@ class WorkoutCategoryCard extends StatelessWidget {
   final VoidCallback? onTap; // navigation only on "View more"
 
   const WorkoutCategoryCard({
-    Key? key,
+    super.key,
     required this.title,
     required this.subtitle,
     required this.imgPath,
     this.onTap,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -31,20 +31,29 @@ class WorkoutCategoryCard extends StatelessWidget {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(title,
-                    style: const TextStyle(
-                        fontSize: 16, fontWeight: FontWeight.w600)),
+                Text(
+                  title,
+                  style: const TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
                 const SizedBox(height: 4),
-                Text(subtitle,
-                    style: TextStyle(fontSize: 14, color: AppPallete.greycard1)),
+                Text(
+                  subtitle,
+                  style: TextStyle(fontSize: 14, color: AppPallete.greycard1),
+                ),
                 const SizedBox(height: 6),
-                
+
                 // Only "View more" is tappable
                 GestureDetector(
                   onTap: onTap,
                   child: const Text(
                     "View more",
-                    style: TextStyle(fontSize: 14, color: AppPallete.trackerContainerBackground1),
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: AppPallete.trackerContainerBackground1,
+                    ),
                   ),
                 ),
               ],
@@ -56,10 +65,7 @@ class WorkoutCategoryCard extends StatelessWidget {
             padding: const EdgeInsets.all(8),
             decoration: BoxDecoration(
               gradient: LinearGradient(
-                colors: [
-                  AppPallete.gradient1,
-                  AppPallete.gradient2,
-                ],
+                colors: [AppPallete.gradient1, AppPallete.gradient2],
                 begin: Alignment.topLeft,
                 end: Alignment.bottomRight,
               ),

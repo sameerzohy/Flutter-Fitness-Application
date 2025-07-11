@@ -5,16 +5,15 @@ import 'package:flutter/services.dart';
 import 'package:fitness_app/features/exercise_tracker/data/models/exercise_model.dart';
 import 'package:fitness_app/features/exercise_tracker/presentation/widgets/exercise_tile.dart';
 
-
 class ExerciseListBuilder extends StatelessWidget {
   final String jsonPath;
   final String category;
 
   const ExerciseListBuilder({
-    Key? key,
+    super.key,
     required this.jsonPath,
     required this.category,
-  }) : super(key: key);
+  });
 
   Future<List<ExerciseModel>> _loadExercises() async {
     final String data = await rootBundle.loadString(jsonPath);

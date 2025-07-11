@@ -16,7 +16,7 @@ import 'package:supabase_flutter/supabase_flutter.dart';
 class ExerciseSchedulePage extends StatefulWidget {
   final FetchExercises fetchExercises;
 
-  const ExerciseSchedulePage({Key? key, required this.fetchExercises}) : super(key: key);
+  const ExerciseSchedulePage({super.key, required this.fetchExercises});
 
   @override
   State<ExerciseSchedulePage> createState() => _ExerciseSchedulePageState();
@@ -44,7 +44,9 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
         setState(() {
           _currentUser = data.session?.user;
           if (_currentUser != null) {
-            context.read<ScheduledWorkoutBloc>().add(FetchAllWorkoutsEvent(_currentUser!.id));
+            context.read<ScheduledWorkoutBloc>().add(
+              FetchAllWorkoutsEvent(_currentUser!.id),
+            );
           } else {
             //context.read<ScheduledWorkoutBloc>().add(const ScheduledWorkoutsDisplaySuccess([]));
           }
@@ -60,12 +62,17 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
       setState(() {
         isLoadingExercises = false;
       });
-      _showSnackBar('Please log in to schedule and view workouts.', isError: true);
+      _showSnackBar(
+        'Please log in to schedule and view workouts.',
+        isError: true,
+      );
       return;
     }
 
     _loadExercises();
-    context.read<ScheduledWorkoutBloc>().add(FetchAllWorkoutsEvent(_currentUser!.id));
+    context.read<ScheduledWorkoutBloc>().add(
+      FetchAllWorkoutsEvent(_currentUser!.id),
+    );
   }
 
   @override
@@ -85,7 +92,10 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
     res.fold(
       (failure) {
         print("Error loading exercises: ${failure.message}");
-        _showSnackBar("Failed to load available exercises: ${failure.message}", isError: true);
+        _showSnackBar(
+          "Failed to load available exercises: ${failure.message}",
+          isError: true,
+        );
         setState(() {
           isLoadingExercises = false;
         });
@@ -110,7 +120,10 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
 
   void _handleCreateOrUpdate(int? workoutId) {
     if (_currentUser == null) {
-      _showSnackBar('You must be logged in to perform this action.', isError: true);
+      _showSnackBar(
+        'You must be logged in to perform this action.',
+        isError: true,
+      );
       return;
     }
 
@@ -126,23 +139,23 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
 
     if (workoutId == null) {
       context.read<ScheduledWorkoutBloc>().add(
-            CreateWorkoutEvent(
-              title: title,
-              dateTime: selectedDate,
-              exercises: List.from(selectedExercises),
-              userId: _currentUser!.id,
-            ),
-          );
+        CreateWorkoutEvent(
+          title: title,
+          dateTime: selectedDate,
+          exercises: List.from(selectedExercises),
+          userId: _currentUser!.id,
+        ),
+      );
     } else {
       context.read<ScheduledWorkoutBloc>().add(
-            UpdateWorkoutEvent(
-              id: workoutId,
-              title: title,
-              dateTime: selectedDate,
-              exercises: List.from(selectedExercises),
-              userId: _currentUser!.id,
-            ),
-          );
+        UpdateWorkoutEvent(
+          id: workoutId,
+          title: title,
+          dateTime: selectedDate,
+          exercises: List.from(selectedExercises),
+          userId: _currentUser!.id,
+        ),
+      );
     }
   }
 
@@ -162,8 +175,8 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
       selectedDate = DateTime.now();
     }
 
-    DateTime _tempSelectedDate = selectedDate;
-    List<Exercise> _tempSelectedExercises = List.from(selectedExercises);
+    DateTime tempSelectedDate = selectedDate;
+    List<Exercise> tempSelectedExercises = List.from(selectedExercises);
 
     await showDialog(
       context: context,
@@ -187,30 +200,50 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
                       decoration: InputDecoration(
                         hintText: "Workout title",
                         border: const OutlineInputBorder(),
-                        hintStyle: TextStyle(color: const Color.fromARGB(255, 18, 18, 18).withOpacity(0.7)),
+                        hintStyle: TextStyle(
+                          color: const Color.fromARGB(
+                            255,
+                            18,
+                            18,
+                            18,
+                          ).withOpacity(0.7),
+                        ),
                         enabledBorder: const OutlineInputBorder(
-                          borderSide: BorderSide(color: Color.fromARGB(255, 0, 0, 0)),
+                          borderSide: BorderSide(
+                            color: Color.fromARGB(255, 0, 0, 0),
+                          ),
                         ),
                         focusedBorder: const OutlineInputBorder(
                           borderSide: BorderSide(color: AppPallete.gradient2),
                         ),
                       ),
-                      style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                      style: const TextStyle(
+                        color: Color.fromARGB(255, 0, 0, 0),
+                      ),
                       cursorColor: AppPallete.gradient2,
                     ),
                     const SizedBox(height: 12),
                     ElevatedButton.icon(
-                      icon: const Icon(Icons.calendar_today, color: Color.fromARGB(255, 3, 3, 3)),
+                      icon: const Icon(
+                        Icons.calendar_today,
+                        color: Color.fromARGB(255, 3, 3, 3),
+                      ),
                       label: Text(
-                        "Pick Date: ${DateFormat('MMM d, hh:mm a').format(_tempSelectedDate)}",
-                        style: const TextStyle(color: Color.fromARGB(255, 0, 0, 0)),
+                        "Pick Date: ${DateFormat('MMM d, hh:mm a').format(tempSelectedDate)}",
+                        style: const TextStyle(
+                          color: Color.fromARGB(255, 0, 0, 0),
+                        ),
                       ),
                       onPressed: () async {
                         final pickedDate = await showDatePicker(
                           context: context,
-                          initialDate: _tempSelectedDate,
-                          firstDate: DateTime.now().subtract(const Duration(days: 365)),
-                          lastDate: DateTime.now().add(const Duration(days: 365 * 5)),
+                          initialDate: tempSelectedDate,
+                          firstDate: DateTime.now().subtract(
+                            const Duration(days: 365),
+                          ),
+                          lastDate: DateTime.now().add(
+                            const Duration(days: 365 * 5),
+                          ),
                           builder: (context, child) {
                             return Theme(
                               data: ThemeData.dark().copyWith(
@@ -233,7 +266,9 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
                         if (pickedDate != null) {
                           final pickedTime = await showTimePicker(
                             context: context,
-                            initialTime: TimeOfDay.fromDateTime(_tempSelectedDate),
+                            initialTime: TimeOfDay.fromDateTime(
+                              tempSelectedDate,
+                            ),
                             builder: (context, child) {
                               return Theme(
                                 data: ThemeData.dark().copyWith(
@@ -255,26 +290,28 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
                           );
                           if (pickedTime != null) {
                             setDialogState(() {
-                              _tempSelectedDate = DateTime(
+                              tempSelectedDate = DateTime(
                                 pickedDate.year,
                                 pickedDate.month,
                                 pickedDate.day,
                                 pickedTime.hour,
                                 pickedTime.minute,
                               );
-                              selectedDate = _tempSelectedDate;
+                              selectedDate = tempSelectedDate;
                             });
                           } else {
                             setDialogState(() {
-                              _tempSelectedDate = pickedDate;
-                              selectedDate = _tempSelectedDate;
+                              tempSelectedDate = pickedDate;
+                              selectedDate = tempSelectedDate;
                             });
                           }
                         }
                       },
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppPallete.gradient1,
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
                     const SizedBox(height: 12),
@@ -287,112 +324,185 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
                               isScrollable: true,
                               indicatorColor: AppPallete.gradient2,
                               labelColor: AppPallete.gradient2,
-                              unselectedLabelColor: const Color.fromARGB(255, 80, 74, 74),
-                              tabs: exercisesByCategory.keys
-                                  .map((cat) => Tab(text: cat.toUpperCase()))
-                                  .toList(),
+                              unselectedLabelColor: const Color.fromARGB(
+                                255,
+                                80,
+                                74,
+                                74,
+                              ),
+                              tabs:
+                                  exercisesByCategory.keys
+                                      .map(
+                                        (cat) => Tab(text: cat.toUpperCase()),
+                                      )
+                                      .toList(),
                             ),
                             const SizedBox(height: 8),
                             Expanded(
                               child: TabBarView(
-                                children: exercisesByCategory.entries.map((entry) {
-                                  final exercises = entry.value;
+                                children:
+                                    exercisesByCategory.entries.map((entry) {
+                                      final exercises = entry.value;
 
-                                  return ListView.separated(
-                                    itemCount: exercises.length,
-                                    separatorBuilder: (_, __) => const Divider(height: 1, color: AppPallete.borderColor),
-                                    itemBuilder: (context, index) {
-                                      final exercise = exercises[index];
-                                      final isSelected = _tempSelectedExercises.contains(exercise);
+                                      return ListView.separated(
+                                        itemCount: exercises.length,
+                                        separatorBuilder:
+                                            (_, __) => const Divider(
+                                              height: 1,
+                                              color: AppPallete.borderColor,
+                                            ),
+                                        itemBuilder: (context, index) {
+                                          final exercise = exercises[index];
+                                          final isSelected =
+                                              tempSelectedExercises.contains(
+                                                exercise,
+                                              );
 
-                                      return ListTile(
-                                        tileColor: isSelected ? AppPallete.greycard1.withOpacity(0.5) : null,
-                                        leading: ClipRRect(
-                                          borderRadius: BorderRadius.circular(8),
-                                          child: Image.asset(
-                                            exercise.image,
-                                            width: 48,
-                                            height: 48,
-                                            fit: BoxFit.cover,
-                                            errorBuilder: (context, error, stackTrace) {
-                                              return const Icon(Icons.fitness_center, size: 48, color: AppPallete.gradient2);
+                                          return ListTile(
+                                            tileColor:
+                                                isSelected
+                                                    ? AppPallete.greycard1
+                                                        .withOpacity(0.5)
+                                                    : null,
+                                            leading: ClipRRect(
+                                              borderRadius:
+                                                  BorderRadius.circular(8),
+                                              child: Image.asset(
+                                                exercise.image,
+                                                width: 48,
+                                                height: 48,
+                                                fit: BoxFit.cover,
+                                                errorBuilder: (
+                                                  context,
+                                                  error,
+                                                  stackTrace,
+                                                ) {
+                                                  return const Icon(
+                                                    Icons.fitness_center,
+                                                    size: 48,
+                                                    color: AppPallete.gradient2,
+                                                  );
+                                                },
+                                              ),
+                                            ),
+                                            title: Text(
+                                              exercise.name,
+                                              style: TextStyle(
+                                                fontWeight:
+                                                    isSelected
+                                                        ? FontWeight.bold
+                                                        : FontWeight.normal,
+                                                color:
+                                                    isSelected
+                                                        ? AppPallete.gradient2
+                                                        : const Color.fromARGB(
+                                                          255,
+                                                          0,
+                                                          0,
+                                                          0,
+                                                        ),
+                                              ),
+                                            ),
+                                            subtitle: Text(
+                                              exercise.reps ?? 'N/A',
+                                              style: TextStyle(
+                                                color:
+                                                    isSelected
+                                                        ? const Color.fromARGB(
+                                                          255,
+                                                          0,
+                                                          0,
+                                                          0,
+                                                        ).withOpacity(0.8)
+                                                        : AppPallete.greyColor,
+                                              ),
+                                            ),
+                                            trailing: Checkbox(
+                                              value: isSelected,
+                                              onChanged: (checked) {
+                                                setDialogState(() {
+                                                  if (checked == true) {
+                                                    tempSelectedExercises.add(
+                                                      exercise,
+                                                    );
+                                                  } else {
+                                                    tempSelectedExercises
+                                                        .remove(exercise);
+                                                  }
+                                                  selectedExercises = List.from(
+                                                    tempSelectedExercises,
+                                                  );
+                                                });
+                                              },
+                                              activeColor: AppPallete.gradient2,
+                                              checkColor: const Color.fromARGB(
+                                                255,
+                                                65,
+                                                55,
+                                                55,
+                                              ),
+                                            ),
+                                            onTap: () {
+                                              setDialogState(() {
+                                                if (isSelected) {
+                                                  tempSelectedExercises.remove(
+                                                    exercise,
+                                                  );
+                                                } else {
+                                                  tempSelectedExercises.add(
+                                                    exercise,
+                                                  );
+                                                }
+                                                selectedExercises = List.from(
+                                                  tempSelectedExercises,
+                                                );
+                                              });
                                             },
-                                          ),
-                                        ),
-                                        title: Text(
-                                          exercise.name,
-                                          style: TextStyle(
-                                            fontWeight: isSelected ? FontWeight.bold : FontWeight.normal,
-                                            color: isSelected ? AppPallete.gradient2 : const Color.fromARGB(255, 0, 0, 0),
-                                          ),
-                                        ),
-                                        subtitle: Text(
-                                          exercise.reps ?? 'N/A',
-                                          style: TextStyle(
-                                            color: isSelected ? const Color.fromARGB(255, 0, 0, 0).withOpacity(0.8) : AppPallete.greyColor,
-                                          ),
-                                        ),
-                                        trailing: Checkbox(
-                                          value: isSelected,
-                                          onChanged: (checked) {
-                                            setDialogState(() {
-                                              if (checked == true) {
-                                                _tempSelectedExercises.add(exercise);
-                                              } else {
-                                                _tempSelectedExercises.remove(exercise);
-                                              }
-                                              selectedExercises = List.from(_tempSelectedExercises);
-                                            });
-                                          },
-                                          activeColor: AppPallete.gradient2,
-                                          checkColor: const Color.fromARGB(255, 65, 55, 55),
-                                        ),
-                                        onTap: () {
-                                          setDialogState(() {
-                                            if (isSelected) {
-                                              _tempSelectedExercises.remove(exercise);
-                                            } else {
-                                              _tempSelectedExercises.add(exercise);
-                                            }
-                                            selectedExercises = List.from(_tempSelectedExercises);
-                                          });
+                                          );
                                         },
                                       );
-                                    },
-                                  );
-                                }).toList(),
+                                    }).toList(),
                               ),
-                            )
+                            ),
                           ],
                         ),
                       ),
-                    )
+                    ),
                   ],
                 ),
               ),
               actions: [
                 TextButton(
                   onPressed: () => Navigator.of(context).pop(),
-                  child: const Text("Cancel", style: TextStyle(color: Color.fromARGB(255, 4, 4, 4))),
+                  child: const Text(
+                    "Cancel",
+                    style: TextStyle(color: Color.fromARGB(255, 4, 4, 4)),
+                  ),
                 ),
                 BlocBuilder<ScheduledWorkoutBloc, ScheduledWorkoutState>(
                   builder: (context, state) {
                     final isLoading = state is ScheduledWorkoutLoading;
                     return ElevatedButton(
-                      onPressed: isLoading ? null : () => _handleCreateOrUpdate(workoutToEdit?.id),
+                      onPressed:
+                          isLoading
+                              ? null
+                              : () => _handleCreateOrUpdate(workoutToEdit?.id),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: AppPallete.gradient1,
                       ),
-                      child: isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                color: AppPallete.gradient2,
-                                strokeWidth: 2,
+                      child:
+                          isLoading
+                              ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  color: AppPallete.gradient2,
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : Text(
+                                workoutToEdit == null ? "Schedule" : "Update",
                               ),
-                            )
-                          : Text(workoutToEdit == null ? "Schedule" : "Update"),
                     );
                   },
                 ),
@@ -421,31 +531,39 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
                   await _supabaseClient.auth.signOut();
                   _showSnackBar('Logged out successfully.');
                 },
-              )
+              ),
           ],
         ),
         body: Center(
-          child: _currentUser == null
-              ? Column(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: [
-                    const Text(
-                      'Please log in to view your workouts.',
-                      style: TextStyle(color: AppPallete.whiteColor, fontSize: 16),
-                      textAlign: TextAlign.center,
-                    ),
-                    const SizedBox(height: 20),
-                    ElevatedButton(
-                      onPressed: () {
-                        // Implement navigation to your login page here
-                        // Example: Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));
-                        _showSnackBar('Login button clicked (implement actual navigation).');
-                      },
-                      child: const Text('Go to Login'),
-                    ),
-                  ],
-                )
-              : const CircularProgressIndicator(color: AppPallete.gradient2),
+          child:
+              _currentUser == null
+                  ? Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      const Text(
+                        'Please log in to view your workouts.',
+                        style: TextStyle(
+                          color: AppPallete.whiteColor,
+                          fontSize: 16,
+                        ),
+                        textAlign: TextAlign.center,
+                      ),
+                      const SizedBox(height: 20),
+                      ElevatedButton(
+                        onPressed: () {
+                          // Implement navigation to your login page here
+                          // Example: Navigator.of(context).pushReplacement(MaterialPageRoute(builder: (_) => LoginPage()));
+                          _showSnackBar(
+                            'Login button clicked (implement actual navigation).',
+                          );
+                        },
+                        child: const Text('Go to Login'),
+                      ),
+                    ],
+                  )
+                  : const CircularProgressIndicator(
+                    color: AppPallete.gradient2,
+                  ),
         ),
       );
     }
@@ -465,7 +583,7 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
                 await _supabaseClient.auth.signOut();
                 _showSnackBar('Logged out successfully.');
               },
-            )
+            ),
         ],
       ),
       body: BlocConsumer<ScheduledWorkoutBloc, ScheduledWorkoutState>(
@@ -483,28 +601,38 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
               Navigator.of(context).pop();
             }
             if (_currentUser != null) {
-              context.read<ScheduledWorkoutBloc>().add(FetchAllWorkoutsEvent(_currentUser!.id));
+              context.read<ScheduledWorkoutBloc>().add(
+                FetchAllWorkoutsEvent(_currentUser!.id),
+              );
             }
           } else if (state is ScheduledWorkoutDeleteSuccess) {
             _showSnackBar('Workout deleted successfully!');
             if (_currentUser != null) {
-              context.read<ScheduledWorkoutBloc>().add(FetchAllWorkoutsEvent(_currentUser!.id));
+              context.read<ScheduledWorkoutBloc>().add(
+                FetchAllWorkoutsEvent(_currentUser!.id),
+              );
             }
           }
         },
         builder: (context, state) {
-          if (state is ScheduledWorkoutLoading && !(state is ScheduledWorkoutsDisplaySuccess)) {
-            return const Center(child: CircularProgressIndicator(color: AppPallete.gradient2));
+          if (state is ScheduledWorkoutLoading &&
+              state is! ScheduledWorkoutsDisplaySuccess) {
+            return const Center(
+              child: CircularProgressIndicator(color: AppPallete.gradient2),
+            );
           }
 
           List<ScheduledWorkout> workoutsToDisplay = [];
           if (state is ScheduledWorkoutsDisplaySuccess) {
             workoutsToDisplay = state.scheduledWorkouts;
           } else if (state is ScheduledWorkoutInitial && _currentUser != null) {
-            context.read<ScheduledWorkoutBloc>().add(FetchAllWorkoutsEvent(_currentUser!.id));
-            return const Center(child: CircularProgressIndicator(color: AppPallete.gradient2));
+            context.read<ScheduledWorkoutBloc>().add(
+              FetchAllWorkoutsEvent(_currentUser!.id),
+            );
+            return const Center(
+              child: CircularProgressIndicator(color: AppPallete.gradient2),
+            );
           }
-
 
           if (workoutsToDisplay.isEmpty) {
             return Center(
@@ -521,9 +649,17 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
                     label: const Text("Add New Workout Schedule"),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: AppPallete.gradient2,
-                      padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                      textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 24,
+                        vertical: 14,
+                      ),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(30),
+                      ),
+                      textStyle: const TextStyle(
+                        fontSize: 18,
+                        fontWeight: FontWeight.w600,
+                      ),
                     ),
                     onPressed: () => _showScheduleDialog(),
                   ),
@@ -540,9 +676,17 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
                   label: const Text("Add New Workout Schedule"),
                   style: ElevatedButton.styleFrom(
                     backgroundColor: const Color.fromARGB(255, 144, 128, 220),
-                    padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
-                    shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(30)),
-                    textStyle: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+                    padding: const EdgeInsets.symmetric(
+                      horizontal: 24,
+                      vertical: 14,
+                    ),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(30),
+                    ),
+                    textStyle: const TextStyle(
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
+                    ),
                     minimumSize: const Size(double.infinity, 50),
                   ),
                   onPressed: () => _showScheduleDialog(),
@@ -558,19 +702,35 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
                       onEdit: () => _showScheduleDialog(workoutToEdit: workout),
                       onDelete: () {
                         if (_currentUser == null) {
-                           _showSnackBar('You must be logged in to delete workouts.', isError: true);
-                           return;
+                          _showSnackBar(
+                            'You must be logged in to delete workouts.',
+                            isError: true,
+                          );
+                          return;
                         }
                         showDialog(
                           context: context,
                           builder: (BuildContext context) {
                             return AlertDialog(
                               backgroundColor: AppPallete.greycard1,
-                              title: const Text('Confirm Deletion', style: TextStyle(color: AppPallete.whiteColor)),
-                              content: Text('Are you sure you want to delete "${workout.title}"?', style: const TextStyle(color: AppPallete.whiteColor)),
+                              title: const Text(
+                                'Confirm Deletion',
+                                style: TextStyle(color: AppPallete.whiteColor),
+                              ),
+                              content: Text(
+                                'Are you sure you want to delete "${workout.title}"?',
+                                style: const TextStyle(
+                                  color: AppPallete.whiteColor,
+                                ),
+                              ),
                               actions: <Widget>[
                                 TextButton(
-                                  child: const Text('Cancel', style: TextStyle(color: AppPallete.whiteColor)),
+                                  child: const Text(
+                                    'Cancel',
+                                    style: TextStyle(
+                                      color: AppPallete.whiteColor,
+                                    ),
+                                  ),
                                   onPressed: () {
                                     Navigator.of(context).pop();
                                   },
@@ -579,9 +739,19 @@ class _ExerciseSchedulePageState extends State<ExerciseSchedulePage> {
                                   style: ElevatedButton.styleFrom(
                                     backgroundColor: AppPallete.errorColor,
                                   ),
-                                  child: const Text('Delete', style: TextStyle(color: AppPallete.whiteColor)),
+                                  child: const Text(
+                                    'Delete',
+                                    style: TextStyle(
+                                      color: AppPallete.whiteColor,
+                                    ),
+                                  ),
                                   onPressed: () {
-                                    context.read<ScheduledWorkoutBloc>().add(DeleteWorkoutEvent(workout.id!, _currentUser!.id));
+                                    context.read<ScheduledWorkoutBloc>().add(
+                                      DeleteWorkoutEvent(
+                                        workout.id!,
+                                        _currentUser!.id,
+                                      ),
+                                    );
                                     Navigator.of(context).pop();
                                   },
                                 ),

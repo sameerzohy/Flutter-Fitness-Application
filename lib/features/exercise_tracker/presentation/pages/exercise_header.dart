@@ -10,7 +10,7 @@ import 'package:intl/intl.dart';
 import 'package:fitness_app/core/theme/appPalatte.dart';
 
 class ExerciseHeader extends StatefulWidget {
-  const ExerciseHeader({Key? key}) : super(key: key);
+  const ExerciseHeader({super.key});
 
   @override
   State<ExerciseHeader> createState() => _ExerciseHeaderState();
@@ -26,10 +26,12 @@ class _ExerciseHeaderState extends State<ExerciseHeader> {
 
   @override
   Widget build(BuildContext context) {
-    SystemChrome.setSystemUIOverlayStyle(const SystemUiOverlayStyle(
-      statusBarColor: AppPallete.gradient1,
-      statusBarIconBrightness: Brightness.dark,
-    ));
+    SystemChrome.setSystemUIOverlayStyle(
+      const SystemUiOverlayStyle(
+        statusBarColor: AppPallete.gradient1,
+        statusBarIconBrightness: Brightness.dark,
+      ),
+    );
 
     return Scaffold(
       body: Stack(
@@ -59,7 +61,6 @@ class _ExerciseHeaderState extends State<ExerciseHeader> {
                   // Back button and title
                   Row(
                     children: [
-                      
                       const Expanded(
                         child: Center(
                           child: Text(
@@ -82,7 +83,9 @@ class _ExerciseHeaderState extends State<ExerciseHeader> {
                     builder: (context, state) {
                       print("WorkoutHistoryBloc State: $state");
                       if (state is WorkoutHistoryLoading) {
-                        return const Center(child: CircularProgressIndicator(color: Colors.white));
+                        return const Center(
+                          child: CircularProgressIndicator(color: Colors.white),
+                        );
                       } else if (state is WorkoutHistoryLoaded) {
                         final chartData = _processWorkoutHistory(state.history);
 
@@ -90,7 +93,10 @@ class _ExerciseHeaderState extends State<ExerciseHeader> {
                           return const Center(
                             child: Text(
                               'No workout data available for the last 7 days.',
-                              style: TextStyle(color: Colors.white, fontSize: 16),
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 16,
+                              ),
                             ),
                           );
                         }
@@ -98,7 +104,7 @@ class _ExerciseHeaderState extends State<ExerciseHeader> {
                         return ExerciseTimeBarChart(
                           data: chartData.exerciseMinutes,
                           labels: chartData.weekLabels,
-                          
+
                           touchedBarColor: AppPallete.gradient2,
                           barBackgroundColor: Colors.white.withOpacity(0.3),
                         );
@@ -106,11 +112,16 @@ class _ExerciseHeaderState extends State<ExerciseHeader> {
                         return Center(
                           child: Text(
                             'Error: ${state.message}',
-                            style: const TextStyle(color: Colors.red, fontSize: 16),
+                            style: const TextStyle(
+                              color: Colors.red,
+                              fontSize: 16,
+                            ),
                           ),
                         );
                       }
-                      return const Center(child: CircularProgressIndicator(color: Colors.white));
+                      return const Center(
+                        child: CircularProgressIndicator(color: Colors.white),
+                      );
                     },
                   ),
                 ],
@@ -124,7 +135,11 @@ class _ExerciseHeaderState extends State<ExerciseHeader> {
 
   WorkoutChartData _processWorkoutHistory(List<WorkoutHistoryEntity> history) {
     DateTime today = DateTime.now();
-    final startDate = DateTime(today.year, today.month, today.day).subtract(const Duration(days: 6));
+    final startDate = DateTime(
+      today.year,
+      today.month,
+      today.day,
+    ).subtract(const Duration(days: 6));
     Map<DateTime, double> dailyDurations = {};
 
     for (int i = 0; i < 7; i++) {
@@ -133,9 +148,18 @@ class _ExerciseHeaderState extends State<ExerciseHeader> {
     }
 
     for (var workout in history) {
-      final workoutDay = DateTime(workout.timestamp.year, workout.timestamp.month, workout.timestamp.day);
-      if (!workoutDay.isBefore(startDate) && !workoutDay.isAfter(today.add(const Duration(days: 1)))) {
-        dailyDurations.update(workoutDay, (value) => value + (workout.duration / 60.0), ifAbsent: () => (workout.duration / 60.0));
+      final workoutDay = DateTime(
+        workout.timestamp.year,
+        workout.timestamp.month,
+        workout.timestamp.day,
+      );
+      if (!workoutDay.isBefore(startDate) &&
+          !workoutDay.isAfter(today.add(const Duration(days: 1)))) {
+        dailyDurations.update(
+          workoutDay,
+          (value) => value + (workout.duration / 60.0),
+          ifAbsent: () => (workout.duration / 60.0),
+        );
       }
     }
 
@@ -151,7 +175,10 @@ class _ExerciseHeaderState extends State<ExerciseHeader> {
     print("Workout minutes for last 7 days: $minutesData");
     print("Chart labels for last 7 days: $labelsData");
 
-    return WorkoutChartData(exerciseMinutes: minutesData, weekLabels: labelsData);
+    return WorkoutChartData(
+      exerciseMinutes: minutesData,
+      weekLabels: labelsData,
+    );
   }
 }
 

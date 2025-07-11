@@ -1,7 +1,6 @@
 import 'package:dartz/dartz.dart';
 import 'package:fitness_app/core/error/failure.dart';
 
-import 'package:fitness_app/core/usecases/usecase.dart';
 import 'package:fitness_app/core/usecases/usevcase1.dart';
 import 'package:fitness_app/features/exercise_tracker/domain/repositories/workout_repository.dart';
 

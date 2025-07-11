@@ -1,22 +1,14 @@
 import 'package:fitness_app/features/exercise_tracker/domain/entities/workout_history_entity.dart';
 
-
 class WorkoutHistoryModel extends WorkoutHistoryEntity {
   const WorkoutHistoryModel({
-    required String id,
-    required String userId,
-    required String exerciseId,
-    required DateTime timestamp,
-    required int duration,
-    required DateTime insertedAt,
-  }) : super(
-          id: id,
-          userId: userId,
-          exerciseId: exerciseId,
-          timestamp: timestamp,
-          duration: duration,
-          insertedAt: insertedAt,
-        );
+    required super.id,
+    required super.userId,
+    required super.exerciseId,
+    required super.timestamp,
+    required super.duration,
+    required super.insertedAt,
+  });
 
   factory WorkoutHistoryModel.fromMap(Map<String, dynamic> map) {
     return WorkoutHistoryModel(

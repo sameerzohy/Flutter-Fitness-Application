@@ -3,18 +3,12 @@ import 'package:fitness_app/core/entities/exercise.dart' as exercise_entity;
 
 class WorkoutModel extends workout_entity.Workout {
   WorkoutModel({
-    required String id,
-    required String title,
-    required String time,
-    required bool isActive,
-    required List<exercise_entity.Exercise> exercises,
-  }) : super(
-          id: id,
-          title: title,
-          time: time,
-          isActive: isActive,
-          exercises: exercises,
-        );
+    required super.id,
+    required super.title,
+    required super.time,
+    required super.isActive,
+    required super.exercises,
+  });
 
   factory WorkoutModel.fromJson(Map<String, dynamic> json) {
     return WorkoutModel(
@@ -22,9 +16,10 @@ class WorkoutModel extends workout_entity.Workout {
       title: json['title'],
       time: json['time'],
       isActive: json['isActive'],
-      exercises: (json['exercises'] as List<dynamic>)
-          .map((e) => exercise_entity.Exercise.fromJson(e))
-          .toList(),
+      exercises:
+          (json['exercises'] as List<dynamic>)
+              .map((e) => exercise_entity.Exercise.fromJson(e))
+              .toList(),
     );
   }
 

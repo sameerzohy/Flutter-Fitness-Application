@@ -5,31 +5,31 @@ import 'package:fitness_app/features/exercise_tracker/domain/entities/scheduled_
 
 class ScheduledWorkoutModel extends ScheduledWorkout {
   const ScheduledWorkoutModel({
-    int? id,
-    required String title,
-    required DateTime dateTime,
-    required List<Exercise> exercises,
-    required String userId,
-  }) : super(
-          id: id,
-          title: title,
-          dateTime: dateTime,
-          exercises: exercises,
-          userId: userId,
-        );
+    super.id,
+    required super.title,
+    required super.dateTime,
+    required super.exercises,
+    required super.userId,
+  });
 
   factory ScheduledWorkoutModel.fromJson(Map<String, dynamic> map) {
     // Supabase jsonb column might return a String or a List<dynamic>
-    final List<dynamic> exercisesJson = map['exercises'] is String
-        ? jsonDecode(map['exercises']) // Decode if it's a JSON string
-        : map['exercises']; // Otherwise, it's already a list/array
+    final List<dynamic> exercisesJson =
+        map['exercises'] is String
+            ? jsonDecode(map['exercises']) // Decode if it's a JSON string
+            : map['exercises']; // Otherwise, it's already a list/array
 
     return ScheduledWorkoutModel(
       id: map['id'] as int,
       title: map['title'] as String,
-      dateTime: DateTime.parse(map['date_time'] as String).toLocal(), // Convert to local time
+      dateTime:
+          DateTime.parse(
+            map['date_time'] as String,
+          ).toLocal(), // Convert to local time
       exercises: List<Exercise>.from(
-        exercisesJson.map((x) => Exercise.fromJson(x)), // <<< Directly using Exercise.fromJson
+        exercisesJson.map(
+          (x) => Exercise.fromJson(x),
+        ), // <<< Directly using Exercise.fromJson
       ),
       userId: map['user_id'] as String,
     );

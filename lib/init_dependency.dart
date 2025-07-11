@@ -21,6 +21,12 @@ import 'package:fitness_app/features/exercise_tracker/domain/usecases/workout_us
 import 'package:fitness_app/features/exercise_tracker/presentation/blocs/scheduled_workout/scheduled_workout_bloc.dart';
 import 'package:fitness_app/features/exercise_tracker/presentation/blocs/workout_history_bloc/workout_history_bloc.dart';
 import 'package:fitness_app/features/home_screen/data/hive_models/other_tracker_hive.dart';
+import 'package:fitness_app/features/home_screen/data/remote_datasource/get_other_tracker.dart';
+import 'package:fitness_app/features/home_screen/data/repositories/get_other_traker_remote_repo_impl.dart';
+import 'package:fitness_app/features/home_screen/domain/repositiories/get_other_tracker_repo.dart';
+import 'package:fitness_app/features/home_screen/domain/usecases/get_other_tracker_usecase.dart';
+import 'package:fitness_app/features/home_screen/presentation/bloc/date_selector_cubit.dart';
+import 'package:fitness_app/features/home_screen/presentation/bloc/get_remote_tracker/get_remote_tracker_bloc.dart';
 import 'package:fitness_app/features/home_screen/presentation/bloc/sleep_tracker_bloc/sleep_tracker_bloc.dart';
 import 'package:get_it/get_it.dart';
 import 'package:hive_flutter/hive_flutter.dart';
@@ -87,6 +93,8 @@ Future<void> initDependency() async {
   );
 
   sl.registerLazySingleton<AppUserCubit>(() => AppUserCubit());
+
+  sl.registerFactory<DateSelectorCubit>(() => DateSelectorCubit());
 }
 
 void _initExternal() {
@@ -99,6 +107,18 @@ void _otherTrack() {
   sl.registerFactory<OtherTrackLocalDatasource>(
     () => OtherTrackDatasourceImpl(sl()),
   );
+
+  sl.registerFactory<GetOtherTracker>(() => GetOtherTrackerImpl(sl()));
+
+  sl.registerFactory<GetOtherTrackerRepo>(
+    () => GetOtherTrakerRepoImpl(remoteTracker: sl()),
+  );
+
+  sl.registerFactory<GetOtherTrackerUsecase>(
+    () => GetOtherTrackerUsecase(getOtherTrackerRepo: sl()),
+  );
+
+  sl.registerFactory<GetRemoteTrackerBloc>(() => GetRemoteTrackerBloc(sl()));
 
   sl.registerFactory<OtherTrackerRepository>(
     () => OtherTrackerRepositoryImpl(otherTrackerDatasource: sl()),

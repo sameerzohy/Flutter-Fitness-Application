@@ -9,17 +9,18 @@ import 'package:fitness_app/core/entities/exercise_entity.dart';
 import 'package:fitness_app/features/exercise_tracker/presentation/widgets/workout_timer.dart';
 // Your GetIt locator file
 
-import 'package:fitness_app/features/exercise_tracker/presentation/blocs/workout_history_bloc/workout_history_event.dart' as bloc_event;
+import 'package:fitness_app/features/exercise_tracker/presentation/blocs/workout_history_bloc/workout_history_event.dart'
+    as bloc_event;
 
 class WorkoutDetailPage extends StatelessWidget {
   final ExerciseEntity exercise;
 
-  const WorkoutDetailPage({Key? key, required this.exercise}) : super(key: key);
+  const WorkoutDetailPage({super.key, required this.exercise});
 
   void _onWorkoutComplete(BuildContext context) {
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Workout Completed!')),
-    );
+    ScaffoldMessenger.of(
+      context,
+    ).showSnackBar(const SnackBar(content: Text('Workout Completed!')));
   }
 
   @override
@@ -85,15 +86,19 @@ class WorkoutDetailPage extends StatelessWidget {
             const SizedBox(height: 24),
 
             // BlocProvider for WorkoutHistoryBloc with event dispatch
-           BlocProvider(
-  create: (context) => sl<WorkoutHistoryBloc>()
-    ..add(bloc_event.LoadWorkoutHistory(exerciseId: exercise.name)),
-  child: WorkoutTimer(
-    exercise: exercise,
-    onFinish: () => _onWorkoutComplete(context),
-  ),
-),
-
+            BlocProvider(
+              create:
+                  (context) =>
+                      sl<WorkoutHistoryBloc>()..add(
+                        bloc_event.LoadWorkoutHistory(
+                          exerciseId: exercise.name,
+                        ),
+                      ),
+              child: WorkoutTimer(
+                exercise: exercise,
+                onFinish: () => _onWorkoutComplete(context),
+              ),
+            ),
 
             const SizedBox(height: 24),
           ],

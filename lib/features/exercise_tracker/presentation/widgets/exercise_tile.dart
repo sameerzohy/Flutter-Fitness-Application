@@ -7,11 +7,7 @@ class ExerciseTile extends StatelessWidget {
   final ExerciseEntity data;
   final VoidCallback? onTap; // Optional navigation
 
-  const ExerciseTile({
-    Key? key,
-    required this.data,
-    this.onTap,
-  }) : super(key: key);
+  const ExerciseTile({super.key, required this.data, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +29,10 @@ class ExerciseTile extends StatelessWidget {
             ],
           ),
           child: ListTile(
-            contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+            contentPadding: const EdgeInsets.symmetric(
+              horizontal: 16,
+              vertical: 12,
+            ),
             leading: ClipRRect(
               borderRadius: BorderRadius.circular(12),
               child: Image.asset(
@@ -53,10 +52,7 @@ class ExerciseTile extends StatelessWidget {
             ),
             subtitle: Text(
               data.name,
-              style: TextStyle(
-                fontSize: 14,
-                color: AppPallete.gray2,
-              ),
+              style: TextStyle(fontSize: 14, color: AppPallete.gray2),
             ),
             trailing: Icon(
               Icons.arrow_forward_ios_rounded,

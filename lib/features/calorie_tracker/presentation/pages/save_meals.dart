@@ -36,7 +36,7 @@ class _SaveMealsRemoteState extends State<SaveMealsRemote> {
     String mealId,
     bool isUpdate,
   ) {
-    if (!title.isEmpty || !paraFood.isEmpty) {
+    if (title.isNotEmpty || paraFood.isNotEmpty) {
       foods =
           paraFood
               .map(

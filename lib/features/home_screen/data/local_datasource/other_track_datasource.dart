@@ -50,6 +50,8 @@ class OtherTrackDatasourceImpl extends OtherTrackLocalDatasource {
     try {
       final Duration diff = endTime.difference(startTime);
       final double hours = diff.inMinutes / 60.0;
+      print('start time in update ${startTime}');
+      print('end time in update ${endTime}');
 
       String key = dateKey();
 
@@ -64,6 +66,7 @@ class OtherTrackDatasourceImpl extends OtherTrackLocalDatasource {
           sleepTimeStart: startTime,
           sleepTimeEnd: endTime,
         );
+
         await hiveBox.put(key, updated);
       }
       print('success update of Sleep Tracker');
@@ -82,17 +85,19 @@ class OtherTrackDatasourceImpl extends OtherTrackLocalDatasource {
   @override
   Future<Map<String, dynamic>> getSleepsTracker() async {
     String key = dateKey();
-    for (final entry in hiveBox.toMap().entries) {
-      if (entry.key.toString() == key) {
-        final e = entry.value;
-        return {
-          'sleepTimeStart': e.sleepTimeStart,
-          'sleepTimeEnd': e.sleepTimeEnd,
-          'sleepHours': e.sleepHours,
-        };
-      }
+    try {
+      final tracker = hiveBox.get(key);
+      print('sleepTime start: ${tracker!.sleepTimeStart}');
+      print('sleepTime end: ${tracker.sleepTimeEnd}');
+
+      return {
+        'sleepTimeStart': tracker.sleepTimeStart,
+        'sleepTimeEnd': tracker.sleepTimeEnd,
+        'sleepHours': tracker.sleepHours,
+      };
+    } catch (e) {
+      throw ServerException(message: e.toString());
     }
-    return {};
   }
 
   @override

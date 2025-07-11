@@ -8,7 +8,7 @@ import 'package:fitness_app/init_dependency.dart'; // for sl
 import 'exercise_content.dart';
 
 class ExercisePage extends StatelessWidget {
-  const ExercisePage({Key? key}) : super(key: key);
+  const ExercisePage({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -18,15 +18,16 @@ class ExercisePage extends StatelessWidget {
         children: [
           // Provide the Bloc here and load event immediately
           BlocProvider(
-            create: (_) => sl<WorkoutHistoryBloc>()..add(LoadAllWorkoutHistory()),
+            create:
+                (_) => sl<WorkoutHistoryBloc>()..add(LoadAllWorkoutHistory()),
             child: const ExerciseHeader(),
           ),
 
           // Draggable content sliding over header
           DraggableScrollableSheet(
-            initialChildSize: 0.4,  // how much to show initially (40%)
-            minChildSize: 0.4,      // how much minimum it can shrink
-            maxChildSize: 0.95,     // how much it can expand
+            initialChildSize: 0.4, // how much to show initially (40%)
+            minChildSize: 0.4, // how much minimum it can shrink
+            maxChildSize: 0.95, // how much it can expand
             builder: (context, scrollController) {
               return Container(
                 decoration: const BoxDecoration(
@@ -37,17 +38,15 @@ class ExercisePage extends StatelessWidget {
                       color: Colors.black12,
                       blurRadius: 8,
                       offset: Offset(0, -2),
-                    )
+                    ),
                   ],
                 ),
-                child: ExerciseContent(
-                  scrollController: scrollController,
-                ),
+                child: ExerciseContent(scrollController: scrollController),
               );
             },
           ),
         ],
       ),
-    )         ;
+    );
   }
 }

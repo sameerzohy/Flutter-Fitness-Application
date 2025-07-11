@@ -8,11 +8,11 @@ class AbWorkoutPage extends StatelessWidget {
   final String category;
 
   const AbWorkoutPage({
-    Key? key,
+    super.key,
     required this.title,
     required this.imagePath,
     required this.category,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -90,10 +90,7 @@ class AbWorkoutPage extends StatelessWidget {
                 ],
               ),
               padding: const EdgeInsets.all(16),
-              child: Image.asset(
-                imagePath,
-                fit: BoxFit.contain,
-              ),
+              child: Image.asset(imagePath, fit: BoxFit.contain),
             ),
           ),
 

@@ -7,7 +7,7 @@ class WorkoutCard extends StatelessWidget {
   final Workout workout;
   final VoidCallback? onTap;
 
-  const WorkoutCard({Key? key, required this.workout, this.onTap}) : super(key: key);
+  const WorkoutCard({super.key, required this.workout, this.onTap});
 
   @override
   Widget build(BuildContext context) {
@@ -22,8 +22,11 @@ class WorkoutCard extends StatelessWidget {
           child: Row(
             children: [
               Icon(
-                workout.isActive ? Icons.fitness_center : Icons.fitness_center_outlined,
-                color: workout.isActive ? AppPallete.gradient2 : AppPallete.gray1,
+                workout.isActive
+                    ? Icons.fitness_center
+                    : Icons.fitness_center_outlined,
+                color:
+                    workout.isActive ? AppPallete.gradient2 : AppPallete.gray1,
                 size: 40,
               ),
               const SizedBox(width: 16),
@@ -48,7 +51,7 @@ class WorkoutCard extends StatelessWidget {
                 ),
               ),
               if (workout.isActive)
-                const Icon(Icons.check_circle, color: AppPallete.TrackerGreen)
+                const Icon(Icons.check_circle, color: AppPallete.TrackerGreen),
             ],
           ),
         ),

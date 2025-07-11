@@ -1,4 +1,6 @@
+import 'package:fitness_app/features/home_screen/presentation/bloc/date_selector_cubit.dart';
 import 'package:fitness_app/features/home_screen/presentation/bloc/sleep_tracker_bloc/sleep_tracker_bloc.dart';
+import 'package:fitness_app/features/home_screen/presentation/bloc/get_remote_tracker/get_remote_tracker_bloc.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 
@@ -12,14 +14,42 @@ class SleepTracker extends StatefulWidget {
 class _SleepTrackerState extends State<SleepTracker> {
   final DateTime today = DateTime.now();
   late final DateTime yesterday = today.subtract(Duration(days: 1));
+  DateTime? _lastDate;
+
+  bool isSameDate(DateTime a, DateTime b) {
+    return a.year == b.year && a.month == b.month && a.day == b.day;
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final selectedDate = context.watch<DateSelectorCubit>().state;
+
+    final remoteState = context.read<GetRemoteTrackerBloc>().state;
+    final int daysDiff = DateTime.now().difference(selectedDate).inDays;
+    final int index = 30 - daysDiff - 1;
+
+    if (_lastDate != selectedDate) {
+      _lastDate = selectedDate;
+
+      if (isSameDate(selectedDate, today)) {
+        context.read<SleepTrackerBloc>().add(GetSleepTrackerEvent());
+      } else if (remoteState is! GetRemoteTrackerSuccess) {
+        context.read<GetRemoteTrackerBloc>().add(
+          GetRemoteTrackerEventDetails(),
+        );
+      }
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     context.read<SleepTrackerBloc>().add(GetSleepTrackerEvent());
+    context.read<GetRemoteTrackerBloc>().add(GetRemoteTrackerEventDetails());
   }
 
-  // Picker with custom allowed dates
+  // Utility: Picker for start/end datetime
   Future<DateTime?> pickDateTime({
     required BuildContext context,
     required String label,
@@ -67,7 +97,7 @@ class _SleepTrackerState extends State<SleepTracker> {
 
     if (end.isBefore(start)) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("End time must be after start time")),
+        const SnackBar(content: Text("End time must be after start time")),
       );
       return;
     }
@@ -84,40 +114,93 @@ class _SleepTrackerState extends State<SleepTracker> {
 
   @override
   Widget build(BuildContext context) {
+    final selectedDate = context.watch<DateSelectorCubit>().state;
+    final isToday = isSameDate(selectedDate, today);
+
     DateTime? sleepStartTime;
     DateTime? sleepEndTime;
     double sleepTime = 0;
-    return BlocBuilder<SleepTrackerBloc, SleepTrackerState>(
-      builder: (context, state) {
-        if (state is GetSleepTrackerSuccess) {
-          sleepStartTime = state.startTime;
-          sleepEndTime = state.endTime;
-          sleepTime = state.sleepHours;
-        }
-        return Column(
-          children: [
-            Image.asset(
-              'assets/images/wake-up-icon.png',
-              height: 150,
-              width: 150,
-              fit: BoxFit.contain,
-            ),
-            const SizedBox(height: 10),
-            Text(
-              'Sleep Start: ${formatDateTime(sleepStartTime)}',
-              style: TextStyle(fontSize: 16),
-            ),
-            const SizedBox(height: 5),
-            Text(
-              'Sleep End: ${formatDateTime(sleepEndTime)}',
-              style: TextStyle(fontSize: 16),
-            ),
-            Text('Sleep Duration: $sleepTime'),
-            const SizedBox(height: 10),
-            ElevatedButton(onPressed: updateSleep, child: Text("Update Sleep")),
-          ],
-        );
-      },
+
+    return Column(
+      children: [
+        Image.asset(
+          'assets/images/wake-up-icon.png',
+          height: 150,
+          width: 150,
+          fit: BoxFit.contain,
+        ),
+        const SizedBox(height: 10),
+
+        // Today – Use local bloc state
+        if (isToday)
+          BlocBuilder<SleepTrackerBloc, SleepTrackerState>(
+            builder: (context, state) {
+              if (state is GetSleepTrackerSuccess) {
+                sleepStartTime = state.startTime;
+                sleepEndTime = state.endTime;
+                sleepTime = state.sleepHours;
+              }
+              return _sleepDetails(
+                sleepStartTime,
+                sleepEndTime,
+                sleepTime,
+                isToday,
+              );
+            },
+          ),
+
+        // Past – Use remote data
+        if (!isToday)
+          BlocBuilder<GetRemoteTrackerBloc, GetRemoteTrackerState>(
+            builder: (context, state) {
+              if (state is GetRemoteTrackerSuccess) {
+                final daysDiff = DateTime.now().difference(selectedDate).inDays;
+                final index = 30 - daysDiff - 1;
+                if (index >= 0 && index < state.otherTracker.length) {
+                  final tracker = state.otherTracker[index];
+                  return _sleepDetails(
+                    tracker.sleepStartTime,
+                    tracker.sleepEndTime,
+                    tracker.sleepTracker,
+                    isToday,
+                  );
+                } else {
+                  return const Text("No data available for this date");
+                }
+              }
+              return const Text("Loading...");
+            },
+          ),
+
+        if (isToday) const SizedBox(height: 10),
+        if (isToday)
+          ElevatedButton(
+            onPressed: updateSleep,
+            child: const Text("Update Sleep"),
+          ),
+      ],
+    );
+  }
+
+  Widget _sleepDetails(
+    DateTime? start,
+    DateTime? end,
+    double hours,
+    bool isToday,
+  ) {
+    return Column(
+      children: [
+        Text(
+          'Sleep Start: ${formatDateTime(start)}',
+          style: const TextStyle(fontSize: 16),
+        ),
+        const SizedBox(height: 5),
+        Text(
+          'Sleep End: ${formatDateTime(end)}',
+          style: const TextStyle(fontSize: 16),
+        ),
+        Text('Sleep Duration: $hours hours'),
+      ],
     );
   }
 }
